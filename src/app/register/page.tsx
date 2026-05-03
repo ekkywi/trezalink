@@ -1,0 +1,199 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { motion, Variants, AnimatePresence } from "framer-motion";
+import { 
+  Mail, Lock, Eye, EyeOff, ArrowRight, 
+  Globe, Wallet, CheckCircle2, Building2, ShieldCheck // Tambahkan ShieldCheck
+} from "lucide-react";
+
+export default function RegisterPage() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Definisi baru
+  const [activeTab, setActiveTab] = useState<"email" | "wallet">("email");
+
+  // Definisi state untuk input
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const fadeIn: Variants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
+
+  const sellingPoints = [
+    "Non-custodial wallet architecture",
+    "Direct Solana settlement (No middleman)",
+    "Comprehensive API & Webhook suite",
+    "Enterprise-grade security standards"
+  ];
+
+  return (
+    <div className="min-h-screen w-full flex flex-col md:flex-row bg-[#FDFDFD] dark:bg-[#030305] transition-colors duration-300 text-gray-900 dark:text-white">
+      
+      {/* ================= SISI KIRI: BRANDING & TRUST ================= */}
+      <section className="hidden md:flex md:w-[45%] lg:w-[55%] bg-[#0A0A0B] relative overflow-hidden p-12 lg:p-20 flex-col justify-between">
+        <div className="absolute top-[-20%] left-[-10%] w-[100%] h-[100%] bg-blue-600/10 rounded-full blur-[120px]"></div>
+        
+        <Link href="/" className="relative z-10 flex items-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+             <span className="text-white font-black text-2xl italic">K</span>
+          </div>
+          <span className="text-white font-black text-2xl tracking-tighter italic transition-colors">KIRUPAY</span>
+        </Link>
+
+        <div className="relative z-10">
+          <motion.h2 
+            initial="hidden" animate="visible" variants={fadeIn}
+            className="text-4xl lg:text-6xl font-extrabold text-white leading-tight mb-8"
+          >
+            Start building on<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">modern rails.</span>
+          </motion.h2>
+          
+          <div className="space-y-6">
+            {sellingPoints.map((point, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 + i * 0.1 }}
+                className="flex items-center gap-4 text-white/70"
+              >
+                <div className="bg-blue-500/20 p-1 rounded-full text-blue-400">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <span className="font-medium text-lg">{point}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative z-10 text-white/30 text-xs font-bold uppercase tracking-widest transition-colors">
+          Decentralized Infrastructure • Solana Network
+        </div>
+      </section>
+
+      {/* ================= SISI KANAN: REGISTRATION FORM ================= */}
+      <section className="flex-1 flex flex-col justify-center items-center px-6 py-12 lg:px-24">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-md"
+        >
+          <header className="mb-8 text-center md:text-left">
+            <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2 tracking-tight transition-colors">Create Account</h1>
+            <p className="text-gray-500 dark:text-gray-400 transition-colors">Join the protocol and start accepting payments globally.</p>
+          </header>
+
+          <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-2xl mb-8 border border-gray-200 dark:border-white/10 transition-colors">
+            <button 
+              onClick={() => setActiveTab("email")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "email" ? "bg-white dark:bg-white/10 text-blue-600 dark:text-white shadow-sm" : "text-gray-500"}`}
+            >
+              <Mail className="w-4 h-4" /> Standard
+            </button>
+            <button 
+              onClick={() => setActiveTab("wallet")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "wallet" ? "bg-white dark:bg-white/10 text-purple-600 dark:text-white shadow-sm" : "text-gray-500"}`}
+            >
+              <Wallet className="w-4 h-4" /> Wallet
+            </button>
+          </div>
+
+          <AnimatePresence mode="wait">
+            {activeTab === "email" ? (
+              <motion.form 
+                key="email" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
+                className="space-y-4" onSubmit={(e) => e.preventDefault()}
+              >
+                <div className="relative group">
+                  <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  <input 
+                    type="text" placeholder="Merchant / Company Name"
+                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-blue-500 text-gray-900 dark:text-white rounded-xl py-4 pl-12 pr-4 outline-none transition-all"
+                  />
+                </div>
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  <input 
+                    type="email" placeholder="Business Email"
+                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-blue-500 text-gray-900 dark:text-white rounded-xl py-4 pl-12 pr-4 outline-none transition-all"
+                  />
+                </div>
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    placeholder="Create Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-blue-500 text-gray-900 dark:text-white rounded-xl py-4 pl-12 pr-12 outline-none transition-all"
+                  />
+                  <button 
+                    type="button" onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                <div className="relative group">
+                  <ShieldCheck className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${confirmPassword && password === confirmPassword ? 'text-green-500' : 'text-gray-400 group-focus-within:text-blue-500'}`} />
+                  <input 
+                    type={showConfirmPassword ? "text" : "password"} 
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-blue-500 text-gray-900 dark:text-white rounded-xl py-4 pl-12 pr-12 outline-none transition-all"
+                  />
+                  <button 
+                    type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                                
+                <button 
+                  disabled={password !== confirmPassword || password === ""}
+                  className="w-full bg-gray-900 dark:bg-white text-white dark:text-black font-black py-4 rounded-xl shadow-xl transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                  Create Account <ArrowRight className="w-4 h-4" />
+                </button>
+              </motion.form>
+            ) : (
+              <motion.div 
+                key="wallet" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
+                className="space-y-4"
+              >
+                <div className="p-8 border-2 border-dashed border-gray-200 dark:border-white/10 rounded-3xl text-center transition-colors">
+                  <Wallet className="w-12 h-12 text-purple-500 mx-auto mb-4" />
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-2 transition-colors">Connect Your Identity</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed transition-colors">By connecting your wallet, you use your Solana address as your unique merchant ID.</p>
+                </div>
+                <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] transition-all">
+                  Connect & Register
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="mt-8 text-center">
+            <div className="relative flex items-center justify-center mb-6">
+              <div className="absolute w-full border-t border-gray-100 dark:border-white/10 transition-colors"></div>
+              <span className="relative bg-[#FDFDFD] dark:bg-[#030305] px-4 text-[10px] uppercase font-black tracking-widest text-gray-400 transition-colors">Fast Registration</span>
+            </div>
+            
+            <button className="w-full flex items-center justify-center gap-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/10 transition-all text-xs font-bold transition-colors">
+              <Globe className="w-4 h-4 text-blue-500" /> Sign up with Google
+            </button>
+            
+            <p className="mt-8 text-sm text-gray-500 dark:text-gray-400 transition-colors">
+              Already have an account? <Link href="/login" className="text-blue-600 font-bold hover:underline">Sign In</Link>
+            </p>
+          </div>
+        </motion.div>
+      </section>
+    </div>
+  );
+}
