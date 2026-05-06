@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ArrowRight, Globe, Zap, Shield, Check, TrendingDown, ArrowUpRight, Link as LinkIcon, QrCode, Copy, Send, LayoutTemplate } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function LandingPage() {
   // --- VARIASI ANIMASI KONTEN ---
@@ -64,9 +65,9 @@ export default function LandingPage() {
                 The smart way for freelancers and startups to get paid. Accept Digital Dollars (USDC) from anywhere in the world and settle instantly. 
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <button className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-600 dark:to-blue-800 text-white font-bold text-lg px-8 py-4 rounded-full hover:scale-105 transition-transform shadow-[0_10px_30px_rgba(37,99,235,0.2)] dark:shadow-[0_0_30px_rgba(37,99,235,0.4)] flex items-center justify-center gap-2 border border-blue-500/50">
+                <Link href="/register" className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-600 dark:to-blue-800 text-white font-bold text-lg px-8 py-4 rounded-full hover:scale-105 transition-transform shadow-[0_10px_30px_rgba(37,99,235,0.2)] dark:shadow-[0_0_30px_rgba(37,99,235,0.4)] flex items-center justify-center gap-2 border border-blue-500/50">
                   Open an account <ArrowRight className="w-5 h-5" />
-                </button>
+                </Link>
               </div>
             </motion.div>
 
@@ -248,12 +249,12 @@ export default function LandingPage() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <a href="/login" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-xl px-12 py-5 rounded-full hover:scale-105 transition-transform shadow-[0_10px_30px_rgba(37,99,235,0.2)] dark:shadow-[0_0_40px_rgba(147,51,234,0.4)] border border-transparent dark:border-white/20 flex items-center justify-center gap-2">
+                <Link href="/register" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-xl px-12 py-5 rounded-full hover:scale-105 transition-transform shadow-[0_10px_30px_rgba(37,99,235,0.2)] dark:shadow-[0_0_40px_rgba(147,51,234,0.4)] border border-transparent dark:border-white/20 flex items-center justify-center gap-2">
                   Get Started for Free <ArrowRight className="w-6 h-6" />
-                </a>
-                <button className="bg-white/80 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white font-bold text-xl px-12 py-5 rounded-full hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
-                  Contact Sales <ArrowUpRight className="w-6 h-6 text-gray-400" />
-                </button>
+                </Link>
+                <Link href="/docs" className="bg-gradient-to-r from-white-600 to-blue-600 text-white font-bold text-xl px-12 py-5 rounded-full hover:scale-105 transition-transform shadow-[0_10px_30px_rgba(37,99,235,0.2)] dark:shadow-[0_0_40px_rgba(147,51,234,0.4)] border border-transparent dark:border-white/20 flex items-center justify-center gap-2">
+                  Documentation<ArrowUpRight className="w-6 h-6 text-gray-400" />
+                </Link>
               </div>
             </motion.div>
           </div>

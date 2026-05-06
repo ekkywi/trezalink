@@ -16,6 +16,7 @@ model Merchant {
   id            String        @id @default(cuid())
   businessName  String
   email         String        @unique
+  password      String
   walletAddress String        @unique 
   apiKey        String        @unique @default(uuid()) 
   isActive      Boolean       @default(true)

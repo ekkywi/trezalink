@@ -5,17 +5,28 @@ import Link from "next/link";
 import { motion, Variants, AnimatePresence } from "framer-motion";
 import { 
   Mail, Lock, Eye, EyeOff, ArrowRight, 
-  Globe, Wallet, CheckCircle2, Building2, ShieldCheck // Tambahkan ShieldCheck
+  Globe, Wallet, CheckCircle2, Building2, ShieldCheck, Loader2
 } from "lucide-react";
+import { useRouter } from "next/navigation"; 
 
 export default function RegisterPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Definisi baru
+  const router = useRouter();
+  
+  // Tab & UI States
   const [activeTab, setActiveTab] = useState<"email" | "wallet">("email");
-
-  // Definisi state untuk input
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // Form Data States
+  const [businessName, setBusinessName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Submission States
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
   const fadeIn: Variants = {
     hidden: { opacity: 0, y: 15 },
@@ -28,6 +39,57 @@ export default function RegisterPage() {
     "Comprehensive API & Webhook suite",
     "Enterprise-grade security standards"
   ];
+
+  // === FUNGSI EKSEKUSI REGISTER ===
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      setErrorMsg("Passwords do not match.");
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/;
+    
+    if (!passwordRegex.test(password)) {
+      setErrorMsg("Password is too weak! Must be at least 12 characters long, contain uppercase and lowercase letters, a number, and a special character.");
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMsg("");
+    setSuccessMsg("");
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          businessName: businessName,
+          email: email,
+          password: password,
+          walletAddress: "pending_" + Date.now() + "_setup" 
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to register. Please try again.");
+      }
+
+      // Berhasil
+      setSuccessMsg("Registration successful! Please check your email to set up your password.");
+      
+      // Opsional: Redirect ke dashboard setelah sukses
+      setTimeout(() => router.push("/login"), 2000);
+
+    } catch (error: any) {
+      setErrorMsg(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row bg-[#FDFDFD] dark:bg-[#030305] transition-colors duration-300 text-gray-900 dark:text-white">
@@ -88,46 +150,57 @@ export default function RegisterPage() {
 
           <div className="flex bg-gray-100 dark:bg-white/5 p-1 rounded-2xl mb-8 border border-gray-200 dark:border-white/10 transition-colors">
             <button 
-              onClick={() => setActiveTab("email")}
+              onClick={() => { setActiveTab("email"); setErrorMsg(""); }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "email" ? "bg-white dark:bg-white/10 text-blue-600 dark:text-white shadow-sm" : "text-gray-500"}`}
             >
               <Mail className="w-4 h-4" /> Standard
             </button>
             <button 
-              onClick={() => setActiveTab("wallet")}
+              onClick={() => { setActiveTab("wallet"); setErrorMsg(""); }}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === "wallet" ? "bg-white dark:bg-white/10 text-purple-600 dark:text-white shadow-sm" : "text-gray-500"}`}
             >
               <Wallet className="w-4 h-4" /> Wallet
             </button>
           </div>
 
+          {errorMsg && (
+            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm rounded-xl text-center">
+              {errorMsg}
+            </div>
+          )}
+          {successMsg && (
+            <div className="mb-4 p-3 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 text-sm rounded-xl text-center">
+              {successMsg}
+            </div>
+          )}
+
           <AnimatePresence mode="wait">
             {activeTab === "email" ? (
               <motion.form 
                 key="email" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
-                className="space-y-4" onSubmit={(e) => e.preventDefault()}
+                className="space-y-4" onSubmit={handleRegister}
               >
                 <div className="relative group">
                   <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                   <input 
-                    type="text" placeholder="Merchant / Company Name"
+                    type="text" placeholder="Merchant / Company Name" required
+                    value={businessName} onChange={(e) => setBusinessName(e.target.value)}
                     className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-blue-500 text-gray-900 dark:text-white rounded-xl py-4 pl-12 pr-4 outline-none transition-all"
                   />
                 </div>
                 <div className="relative group">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                   <input 
-                    type="email" placeholder="Business Email"
+                    type="email" placeholder="Business Email" required
+                    value={email} onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-blue-500 text-gray-900 dark:text-white rounded-xl py-4 pl-12 pr-4 outline-none transition-all"
                   />
                 </div>
                 <div className="relative group">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                   <input 
-                    type={showPassword ? "text" : "password"} 
-                    placeholder="Create Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    type={showPassword ? "text" : "password"} placeholder="Create Password" required
+                    value={password} onChange={(e) => setPassword(e.target.value)}
                     className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-blue-500 text-gray-900 dark:text-white rounded-xl py-4 pl-12 pr-12 outline-none transition-all"
                   />
                   <button 
@@ -140,10 +213,8 @@ export default function RegisterPage() {
                 <div className="relative group">
                   <ShieldCheck className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${confirmPassword && password === confirmPassword ? 'text-green-500' : 'text-gray-400 group-focus-within:text-blue-500'}`} />
                   <input 
-                    type={showConfirmPassword ? "text" : "password"} 
-                    placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    type={showConfirmPassword ? "text" : "password"} placeholder="Confirm Password" required
+                    value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-blue-500 text-gray-900 dark:text-white rounded-xl py-4 pl-12 pr-12 outline-none transition-all"
                   />
                   <button 
@@ -155,10 +226,12 @@ export default function RegisterPage() {
                 </div>
                                 
                 <button 
-                  disabled={password !== confirmPassword || password === ""}
+                  type="submit"
+                  disabled={isLoading || password !== confirmPassword || password === ""}
                   className="w-full bg-gray-900 dark:bg-white text-white dark:text-black font-black py-4 rounded-xl shadow-xl transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                  Create Account <ArrowRight className="w-4 h-4" />
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Create Account"} 
+                  {!isLoading && <ArrowRight className="w-4 h-4" />}
                 </button>
               </motion.form>
             ) : (

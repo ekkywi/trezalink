@@ -2,20 +2,72 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, Variants, AnimatePresence } from "framer-motion";
 import { 
   Mail, Lock, Eye, EyeOff, ArrowRight, 
-  Globe, Wallet, CheckCircle2, ShieldCheck, 
-  Zap, Sparkles, Fingerprint 
+  Globe, Wallet, Fingerprint, Loader2
 } from "lucide-react";
 
 export default function LoginPage() {
+  const router = useRouter();
+  
+  // UI States
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<"email" | "wallet">("email");
+
+  // Form Data States
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // Status States
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
   const fadeIn: Variants = {
     hidden: { opacity: 0, y: 15 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
+  // === FUNGSI EKSEKUSI LOGIN ===
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      setErrorMsg("Email and password are required!");
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMsg("");
+    setSuccessMsg("");
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to login");
+      }
+
+      setSuccessMsg("Authentication successful! Redirecting to dashboard...");
+      
+      // Redirect ke dashboard setelah login sukses
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1500);
+
+    } catch (error: any) {
+      setErrorMsg(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -90,18 +142,31 @@ export default function LoginPage() {
             </button>
           </div>
 
+          {/* Feedback Messages */}
+          {errorMsg && (
+            <div className="mb-6 p-3 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm rounded-xl text-center font-medium">
+              {errorMsg}
+            </div>
+          )}
+          {successMsg && (
+            <div className="mb-6 p-3 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 text-sm rounded-xl text-center font-medium">
+              {successMsg}
+            </div>
+          )}
+
           <AnimatePresence mode="wait">
             {activeTab === "email" ? (
               <motion.form 
                 key="email" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}
-                className="space-y-5" onSubmit={(e) => e.preventDefault()}
+                className="space-y-5" onSubmit={handleLogin}
               >
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 ml-1">Merchant Email</label>
                   <div className="relative group">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                     <input 
-                      type="email" placeholder="name@company.com"
+                      type="email" placeholder="name@company.com" required
+                      value={email} onChange={(e) => setEmail(e.target.value)}
                       className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-blue-500 focus:bg-white dark:focus:bg-transparent text-gray-900 dark:text-white rounded-2xl py-4 pl-12 pr-4 outline-none transition-all"
                     />
                   </div>
@@ -115,7 +180,8 @@ export default function LoginPage() {
                   <div className="relative group">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                     <input 
-                      type={showPassword ? "text" : "password"} placeholder="••••••••"
+                      type={showPassword ? "text" : "password"} placeholder="••••••••" required
+                      value={password} onChange={(e) => setPassword(e.target.value)}
                       className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-blue-500 focus:bg-white dark:focus:bg-transparent text-gray-900 dark:text-white rounded-2xl py-4 pl-12 pr-12 outline-none transition-all"
                     />
                     <button 
@@ -127,8 +193,12 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                <button className="w-full bg-gray-900 dark:bg-white text-white dark:text-black font-black py-4 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 group">
-                  Sign In <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <button 
+                  type="submit" disabled={isLoading}
+                  className="w-full bg-gray-900 dark:bg-white text-white dark:text-black font-black py-4 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 group disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
+                  {!isLoading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
                 </button>
               </motion.form>
             ) : (
