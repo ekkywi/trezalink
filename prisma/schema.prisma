@@ -13,29 +13,31 @@ datasource db {
 
 // User/Merchant
 model Merchant {
-  id            String        @id @default(cuid())
-  businessName  String
-  email         String        @unique
-  password      String
-  walletAddress String        @unique 
-  apiKey        String        @unique @default(uuid()) 
-  isActive      Boolean       @default(true)
-  transactions  Transaction[] 
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id              String        @id @default(cuid())
+  businessName    String
+  email           String        @unique
+  password        String
+  walletAddress   String        @unique 
+  apiKey          String        @unique @default(uuid()) 
+  isActive        Boolean       @default(true)
+  emailVerified   Boolean       @default(false)
+  activationToken String?       @unique
+  transactions    Transaction[] 
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 // Transaction
 model Transaction {
-  id              String    @id @default(cuid())
-  txid            String?   @unique
+  id              String        @id @default(cuid())
+  txid            String?       @unique
   cryptoAmount    Decimal
   cryptoCurrency  String
   fiatAmount      Decimal
-  fiatCurrency    String    @default("IDR")
-  status          String    @default("PENDING")
+  fiatCurrency    String        @default("IDR")
+  status          String        @default("PENDING")
   merchantId      String
-  merchant        Merchant  @relation(fields: [merchantId], references: [id])
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  merchant        Merchant      @relation(fields: [merchantId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }

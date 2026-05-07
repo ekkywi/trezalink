@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from '@prisma/client';
-import { Pool } from 'pg'; 
-import { PrismaPg } from '@prisma/adapter-pg';
 import { SignJWT } from "jose";
 import { cookies } from "next/headers";
 import bcrypt from 'bcrypt';
+import prisma from "@/lib/neon";
 
 export async function POST(req: Request) {
     try {
@@ -18,35 +16,27 @@ export async function POST(req: Request) {
             );
         }
 
-        const connectionString = process.env.DATABASE_URL;
-        
-        if (!connectionString) {
-            return NextResponse.json(
-                { error: "Server Configuration Error" },
-                { status: 500 }
-            );
-        }
-
-        const pool = new Pool({ connectionString });
-        const adapter = new PrismaPg(pool);
-        const prisma = new PrismaClient({ adapter });
-
         const merchant = await prisma.merchant.findUnique({
             where: { email: email }
         });
-
+        
         if (!merchant) {
-            await prisma.$disconnect(); 
             return NextResponse.json(
                 { error: "Invalid email or password" }, 
                 { status: 401 }
             );
         }
 
+        if (!merchant.emailVerified) {
+            return NextResponse.json(
+                { error: "Please verify your email before logging in." },
+                { status: 403 }
+            );
+        }
+
         const isPasswordValid = await bcrypt.compare(password, merchant.password);
         
         if (!isPasswordValid) {
-            await prisma.$disconnect();
             return NextResponse.json(
                 { error: "Invalid email or password" },
                 { status: 401 }
@@ -71,8 +61,6 @@ export async function POST(req: Request) {
             path: "/",
             maxAge: 60 * 60 * 24,
         });
-
-        await prisma.$disconnect();
 
         return NextResponse.json(
             { 

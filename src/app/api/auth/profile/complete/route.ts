@@ -1,54 +1,53 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import bcrypt from 'bcrypt';
-import crypto from 'crypto';
+import bcrypt from "bcrypt";
+import crypto from "crypto";
 import prisma from "@/lib/neon";
+import { p } from "framer-motion/client";
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        const { businessName, email, password, walletAddress } = body;
+        const { merchantId, email, password, businessName } = await req.json();
 
-        if (!businessName || !email || !password || !walletAddress) {
-            return NextResponse.json({ error : "Missing required fields" }, { status: 400 });
+        if (!merchantId || !email || !password || !businessName) {
+            return NextResponse.json(
+                { error: "All fields are required" },
+                { status: 400 }
+            );
         }
 
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/;
-        if (!passwordRegex.test(password)) {
-            return NextResponse.json({ error: "Password does not meet security requirements" }, { status: 400 });
-        }
-
-        const existingMerchant = await prisma.merchant.findFirst({
+        const existingEmail = await prisma.merchant.findFirst({
             where: {
-                OR: [{ email }, { walletAddress }]
+                email: email,
+                id: { not: merchantId}
             }
         });
 
-        if (existingMerchant) {
-            return NextResponse.json({ error: "Merchant with this email or wallet address already exists" }, { status: 409 });
+        if (existingEmail) {
+            return NextResponse.json(
+                { error: "This email is already registered to another account" },
+                { status: 409 }
+            );
         }
 
         const saltRounds = 12;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        const activationToken = crypto.randomBytes(32).toString('hex');
+        const activationToken = crypto.randomBytes(32).toString("hex");
 
-        const newMerchant = await prisma.merchant.create({
+        await prisma.merchant.update({
+            where: { id: merchantId },
             data: {
-                businessName,
-                email,
-                walletAddress,
+                email: email,
                 password: hashedPassword,
-                activationToken,
-                emailVerified: false,
+                businessName: businessName,
+                activationToken: activationToken,
+                emailVerified: false
             }
         });
 
-        // DEFINISIKAN BASE URL DI SINI
-        const baseUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+        const resend = new Resend(process.env.RESEND_API_KEY!);
+        const baseUrl = process.env.FRONTEND_URL;
 
-        // Kirim Email
         await resend.emails.send({
             from: "Kirupay <noreply@kirupay.com>",
             to: email,
@@ -121,11 +120,15 @@ export async function POST(req: Request) {
         });
 
         return NextResponse.json(
-            { message: "Merchant registered successfully. Please check your email." },
-            { status: 201 }
+            { message: "Profile updated and verification email sent" },
+            { status: 200 }
         );
+    
     } catch (error) {
-        console.error("Error registering merchant:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        console.error("Complete profile error:", error);
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        )
     }
 }
