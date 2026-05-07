@@ -3,28 +3,24 @@ import { jwtVerify } from "jose";
 import prisma from "@/lib/neon";
 
 export async function getCurrentMerchant() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth-token")?.value;
-
-  if (!token) return null;
-
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secret);
-    
-    const merchantId = payload.merchantId as string;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth-token")?.value;
 
-    const merchant = await prisma.merchant.findUnique({
-      where: { id: merchantId },
-      select: { 
-        id: true, 
-        businessName: true, 
-        email: true 
-      }
+    if (!token) return null;
+
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    
+    const { payload } = await jwtVerify(token, secret);
+
+    const liveMerchant = await prisma.merchant.findUnique({
+      where: { id: payload.merchantId as string }
     });
 
-    return merchant;
+    return liveMerchant;
+    
   } catch (error) {
+    console.error("Error getting current merchant:", error);
     return null;
   }
 }
