@@ -19,13 +19,6 @@ export default async function DashboardPage() {
   const isUnverified = merchant.emailVerified === false;
   const needsSetup = isWalletDummyEmail || isUnverified;
 
-  // DETEKTOR STATUS (Lihat ini di terminal Anda nanti)
-  console.log("--- DEBUG GATEKEEPER ---");
-  console.log("1. isWalletDummyEmail :", isWalletDummyEmail);
-  console.log("2. isUnverified       :", isUnverified);
-  console.log("3. needsSetup         :", needsSetup);
-  console.log("------------------------");
-
   return (
     <DashboardShell merchant={merchant}>
       {/* JIKA needsSetup TRUE -> MUNCUL GATEKEEPER */}

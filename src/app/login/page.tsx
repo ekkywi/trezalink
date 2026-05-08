@@ -156,9 +156,11 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="relative z-10 flex gap-6 text-white/30 text-xs font-bold uppercase tracking-widest">
-          <span>Security Audit: Passed</span>
-          <span>SLA: 99.9%</span>
+        <div className="relative z-10 mt-8">
+            <div className="text-sm text-white/60">
+              <p className="text-transparent font-bold italic bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">KIRUPAY</p>
+              <p className="text-xs mt-1">&copy; {new Date().getFullYear()} Kirupay — Global payments, borderless economy.</p>
+            </div>
         </div>
       </section>
 
@@ -207,7 +209,7 @@ export default function LoginPage() {
             {activeTab === "email" ? (
               <motion.form key="email" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-5" onSubmit={handleLogin}>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 ml-1">Merchant Email</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 ml-1">Merchant or Business Email</label>
                   <div className="relative group">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                     <input type="email" placeholder="name@company.com" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-blue-500 focus:bg-white dark:focus:bg-transparent text-gray-900 dark:text-white rounded-2xl py-4 pl-12 pr-4 outline-none transition-all"/>

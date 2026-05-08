@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, Mail, Lock, Building2, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, Mail, Lock, Building2, ArrowRight, Loader2 } from "lucide-react";
 
 interface SetupGatekeeperProps {
   merchantId: string;
@@ -15,6 +15,7 @@ export default function SetupGatekeeper({ merchantId, currentEmail, isWalletUser
   // State untuk form
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); // <-- State baru
   const [businessName, setBusinessName] = useState("");
   
   // State untuk status UI
@@ -26,8 +27,14 @@ export default function SetupGatekeeper({ merchantId, currentEmail, isWalletUser
     setIsLoading(true);
     setStatusMsg({ type: "", text: "" });
 
+    // Validasi Konfirmasi Password
+    if (password !== confirmPassword) {
+      setStatusMsg({ type: "error", text: "Passwords do not match. Please try again." });
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      // Nanti API ini yang akan memproses penggabungan data & mengirim email aktivasi Resend
       const res = await fetch("/api/auth/profile/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -107,6 +114,11 @@ export default function SetupGatekeeper({ merchantId, currentEmail, isWalletUser
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input type="password" placeholder="Create Password" required minLength={12} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-gray-50 dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#333] text-gray-900 dark:text-white rounded-xl py-3 pl-12 pr-4 outline-none focus:border-blue-500 transition-colors" />
+                </div>
+                {/* KOLOM BARU: Konfirmasi Password */}
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input type="password" placeholder="Confirm Password" required minLength={12} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full bg-gray-50 dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#333] text-gray-900 dark:text-white rounded-xl py-3 pl-12 pr-4 outline-none focus:border-blue-500 transition-colors" />
                 </div>
                 <button type="submit" disabled={isLoading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2">
                   {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Save & Verify <ArrowRight className="w-4 h-4" /></>}

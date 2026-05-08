@@ -178,8 +178,11 @@ export default function RegisterPage() {
             ))}
           </div>
         </div>
-        <div className="relative z-10 text-white/30 text-xs font-bold uppercase tracking-widest transition-colors">
-          Decentralized Infrastructure • Solana Network
+        <div className="relative z-10 mt-8">
+            <div className="text-sm text-white/60">
+              <p className="text-transparent font-bold italic bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">KIRUPAY</p>
+              <p className="text-xs mt-1">&copy; {new Date().getFullYear()} Kirupay — Global payments, borderless economy.</p>
+            </div>
         </div>
       </section>
 
