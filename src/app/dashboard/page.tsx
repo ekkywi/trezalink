@@ -39,7 +39,7 @@ export default async function DashboardPage() {
               trend="+12.5%" 
               trendUp={true} 
             />
-            <WalletOverview />
+            <WalletOverview initialWallet={merchant.walletAddress} />
           </div>
 
           <div className="lg:col-span-8 space-y-4 flex flex-col">
