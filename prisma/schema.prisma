@@ -22,7 +22,8 @@ model Merchant {
   isActive        Boolean       @default(true)
   emailVerified   Boolean       @default(false)
   activationToken String?       @unique
-  transactions    Transaction[] 
+  transactions    Transaction[]
+  webhookUrl      String? 
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 }
@@ -36,6 +37,7 @@ model Transaction {
   amount          Float
   currency        String        @default("SOL")
   status          String        @default("PENDING")
+  txSignature     String?       @unique
   customerEmail   String?
   successUrl      String?
   cancelUrl       String?

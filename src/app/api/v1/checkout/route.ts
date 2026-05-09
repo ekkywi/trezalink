@@ -55,6 +55,23 @@ export async function POST(req: Request) {
             );
         }
 
+        const existingTransaction = await prisma.transaction.findFirst({
+            where: {
+                merchantId: merchant.id,
+                orderId: String(orderId),
+            }
+        });
+
+        if (existingTransaction) {
+            return NextResponse.json(
+                {
+                    error: "Duplicate Order ID",
+                    details: `Transaction with orderID '${orderId}' already exists. Please use a unique orderId.`
+                },
+                { status: 409, headers: corsHeaders }
+            );
+        }
+
         const transaction = await prisma.transaction.create({
             data: {
                 merchantId: merchant.id,
@@ -64,7 +81,8 @@ export async function POST(req: Request) {
                 customerEmail: customerEmail || null,
                 successUrl: successUrl || null,
                 cancelUrl: cancelUrl || null,
-                status: ""
+                status: "PENDING",
+                createdAt: new Date(),
             },
         });
 
