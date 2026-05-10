@@ -92,7 +92,7 @@ export function CheckoutCard({ transaction }: { transaction: any }) {
             <h2 className="text-xl font-black text-gray-900">{transaction.merchant.businessName}</h2>
           </div>
           <div className="bg-white p-2 rounded-xl shadow-sm border border-gray-100">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">K</div>
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">T</div>
           </div>
         </div>
       </div>

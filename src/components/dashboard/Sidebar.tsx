@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Activity, Key, Settings } from "lucide-react";
+import { LayoutDashboard, Activity, Key, Settings, LinkIcon } from "lucide-react";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -11,6 +11,7 @@ export function Sidebar() {
   const menu = [
     { href: "/dashboard", label: "Portfolio", icon: <LayoutDashboard size={16}/> },
     { href: "/dashboard/payments", label: "Transactions", icon: <Activity size={16}/> },
+    { href: "/dashboard/payment-links", label: "Payment Links", icon: <LinkIcon size={16}/> },
     { href: "/dashboard/api", label: "API Console", icon: <Key size={16}/> },
     { href: "/dashboard/settings", label: "Settings", icon: <Settings size={16}/> },
   ];

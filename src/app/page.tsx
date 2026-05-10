@@ -252,7 +252,7 @@ export default function LandingPage() {
                 <Link href="/register" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-xl px-12 py-5 rounded-full hover:scale-105 transition-transform shadow-[0_10px_30px_rgba(37,99,235,0.2)] dark:shadow-[0_0_40px_rgba(147,51,234,0.4)] border border-transparent dark:border-white/20 flex items-center justify-center gap-2">
                   Get Started for Free <ArrowRight className="w-6 h-6" />
                 </Link>
-                <Link href="/docs" className="bg-gradient-to-r from-white-600 to-blue-600 text-white font-bold text-xl px-12 py-5 rounded-full hover:scale-105 transition-transform shadow-[0_10px_30px_rgba(37,99,235,0.2)] dark:shadow-[0_0_40px_rgba(147,51,234,0.4)] border border-transparent dark:border-white/20 flex items-center justify-center gap-2">
+                <Link href="/register" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-xl px-12 py-5 rounded-full hover:scale-105 transition-transform shadow-[0_10px_30px_rgba(37,99,235,0.2)] dark:shadow-[0_0_40px_rgba(147,51,234,0.4)] border border-transparent dark:border-white/20 flex items-center justify-center gap-2">
                   Documentation<ArrowUpRight className="w-6 h-6 text-gray-400" />
                 </Link>
               </div>

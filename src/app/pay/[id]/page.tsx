@@ -39,7 +39,7 @@ export default async function CheckoutPage({
           <div className="bg-green-100 text-green-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <ShieldCheck size={32} />
           </div>
-          <h1 className="text-2xl font-bold">This invoice has been paid!</h1>
+          <h1 className="text-2xl font-bold text-gray-900">This invoice has been paid!</h1>
           <p className="text-gray-500">Thank you for your purchase.</p>
         </div>
       </div>
