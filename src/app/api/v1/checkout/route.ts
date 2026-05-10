@@ -1,6 +1,18 @@
+// src/app/api/v1/checkout/route.ts
 import { NextResponse } from "next/server";
 import prisma from "@/lib/neon";
-import { parse } from "path";
+import { z } from "zod";
+
+const checkoutSchema = z.object({
+    orderId: z.string().min(1, "Order ID is required").max(100),
+    amount: z.number().positive("Amount must be a positive number"),
+    currency: z.literal("SOL", {
+        errorMap: () => ({ message: "Only SOL currency is supported" })
+    }),
+    customerEmail: z.string().email("Invalid email address format").optional().nullable(),
+    successUrl: z.string().url("Invalid URL format").optional().nullable(),
+    cancelUrl: z.string().url("Invalid URL format").optional().nullable(),
+});
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -39,26 +51,28 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const {
-            orderId,
-            amount,
-            currency = "SOL",
-            customerEmail,
-            successUrl,
-            cancelUrl,
-        } = body;
+        const validation = checkoutSchema.safeParse(body);
 
-        if (!orderId || !amount) {
+        if (!validation.success) {
             return NextResponse.json(
-                { error: "Missing required fields: 'orderId' and 'amount'" },
+                { error: "Invalid format data", details: validation.error.format() },
                 { status: 400, headers: corsHeaders }
             );
         }
 
+        const {
+            orderId,
+            amount,
+            currency,
+            customerEmail,
+            successUrl,
+            cancelUrl,
+        } = validation.data;
+
         const existingTransaction = await prisma.transaction.findFirst({
             where: {
                 merchantId: merchant.id,
-                orderId: String(orderId),
+                orderId: orderId,
             }
         });
 
@@ -75,9 +89,9 @@ export async function POST(req: Request) {
         const transaction = await prisma.transaction.create({
             data: {
                 merchantId: merchant.id,
-                orderId: String(orderId),
-                amount: parseFloat(amount),
-                currency: currency.toUpperCase(),
+                orderId: orderId,
+                amount: amount,
+                currency: currency,
                 customerEmail: customerEmail || null,
                 successUrl: successUrl || null,
                 cancelUrl: cancelUrl || null,

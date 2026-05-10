@@ -88,7 +88,7 @@ export default function LandingPage() {
                       <TrendingDown className="w-4 h-4 text-purple-600 dark:text-purple-300" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm font-bold text-gray-900 dark:text-gray-200 transition-colors">Kirupay Fee (0.3%)</div>
+                      <div className="text-sm font-bold text-gray-900 dark:text-gray-200 transition-colors">Trezalink Fee (0.3%)</div>
                     </div>
                     <div className="font-bold text-gray-900 dark:text-white transition-colors">-3.00</div>
                   </div>
@@ -218,7 +218,7 @@ export default function LandingPage() {
                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider transition-colors">Payment Link Ready</div>
                      <div className="flex items-center gap-2">
                         <div className="flex-1 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-xl p-3.5 text-xs text-blue-700 dark:text-blue-300 font-mono truncate transition-colors">
-                           kirupay.com/pay/inv-8892x
+                           trezalink.com/pay/inv-8892x
                         </div>
                         <div className="bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 cursor-pointer p-3.5 rounded-xl transition-colors border border-transparent dark:border-white/10">
                            <Copy className="w-4 h-4 text-gray-600 dark:text-white" />

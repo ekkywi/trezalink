@@ -30,7 +30,7 @@ export async function POST(req: Request) {
           headers: {
             "Content-Type": "application/json",
             // Di level enterprise, Anda bisa menambahkan header verifikasi seperti:
-            // "X-Kirupay-Signature": "hash_rahasia_untuk_keamanan"
+            // "X-Trezalink-Signature": "hash_rahasia_untuk_keamanan"
           },
           body: JSON.stringify({
             event: "payment.success",

@@ -65,7 +65,7 @@ export default function DeveloperPage() {
                   <div className="bg-blue-600/10 p-3 rounded-2xl h-fit border border-blue-600/20"><Server className="w-6 h-6 text-blue-600 dark:text-blue-400" /></div>
                   <div>
                     <h4 className="font-bold text-xl">Base URL</h4>
-                    <code className="text-sm bg-gray-100 dark:bg-white/10 px-3 py-1 rounded-md font-mono mt-2 block w-fit">https://api.kirupay.com/v1</code>
+                    <code className="text-sm bg-gray-100 dark:bg-white/10 px-3 py-1 rounded-md font-mono mt-2 block w-fit">https://api.trezalink.com/v1</code>
                   </div>
                 </div>
                 <div className="flex gap-5">
@@ -109,7 +109,7 @@ export default function DeveloperPage() {
               <p className="text-lg text-gray-500 mb-8 leading-relaxed">
                 Send a payment intent, receive a checkout URL. No complex wallet handshakes required on your backend.
               </p>
-              <div className="bg-blue-600/10 border border-blue-600/20 text-blue-600 dark:text-blue-400 px-5 py-2 rounded-full text-xs font-mono w-fit">POST /v1/intents</div>
+              <div className="bg-blue-600/10 border border-blue-600/20 text-blue-600 dark:text-blue-400 px-5 py-2 rounded-full text-xs font-mono w-fit">POST /v1/checkout</div>
             </motion.div>
 
             <div className="bg-gray-900 rounded-[2.5rem] p-8 font-mono text-sm shadow-2xl relative">
@@ -119,11 +119,20 @@ export default function DeveloperPage() {
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
               </div>
               <div className="space-y-2 text-gray-300">
-                <p><span className="text-blue-400">curl</span> -X POST https://api.kirupay.com/v1/intents \</p>
-                <p className="pl-4">-H <span className="text-green-400">&quot;x-api-key: kp_live_xxx&quot;</span> \</p>
-                <p className="pl-4">-d <span className="text-orange-400">&apos;{"{"}</span></p>
-                <p className="pl-8"><span className="text-orange-400">&quot;amount&quot;</span>: 100.00</p>
-                <p className="pl-4"><span className="text-orange-400">{"}"}&apos;</span></p>
+                <pre className="text-[11px] font-mono text-gray-300 leading-relaxed">
+                <span className="text-pink-500">curl</span> -X POST https://api.trezalink.com/v1/checkout \
+                  <br/>  -H <span className="text-green-400">"Content-Type: application/json"</span> \
+                  <br/>  -H <span className="text-green-400">"Authorization: Bearer YOUR_API_KEY"</span> \
+                  <br/>  -d <span className="text-yellow-300">'{'{'}</span>
+                  <br/>    <span className="text-blue-300">"orderId"</span>: <span className="text-green-400">"INV-2026-001"</span>,
+                  <br/>    <span className="text-blue-300">"amount"</span>: <span className="text-orange-400">0.5</span>,
+                  <br/>    <span className="text-blue-300">"currency"</span>: <span className="text-green-400">"SOL"</span>,
+                  <br/>    <span className="text-blue-300">"customerEmail"</span>: <span className="text-green-400">"buyer@example.com"</span>,
+                  <br/>    <span className="text-blue-300">"successUrl"</span>: <span className="text-green-400">"https://yourstore.com/success"</span>,
+                  <br/>    <span className="text-blue-300">"cancelUrl"</span>: <span className="text-green-400">"https://yourstore.com/cart"</span>
+                  <br/>  <span className="text-yellow-300">{'}'}'
+                </span>
+                </pre>
               </div>
             </div>
           </div>
@@ -143,7 +152,7 @@ export default function DeveloperPage() {
               </div>
               <h2 className="text-4xl font-bold mb-4">Event-Driven</h2>
               <p className="text-gray-500 text-lg mb-10 max-w-xl mx-auto leading-relaxed">
-                Kirupay pushes status updates to your server the moment mathematical finality is reached.
+                Trezalink pushes status updates to your server the moment mathematical finality is reached.
               </p>
               <button className="bg-blue-600 text-white font-bold px-12 py-4 rounded-full flex items-center gap-2 hover:bg-blue-700 transition-all mx-auto shadow-lg shadow-blue-600/20">
                 View Full Spec <BookOpen className="w-5 h-5" />

@@ -33,7 +33,7 @@ export function WalletOverview({ initialWallet }: WalletOverviewProps) {
 
       const resp = await provider.connect();
       const pubKey = resp.publicKey.toString();
-      const message = `Sign this message to link your wallet to Kirupay.\nTimestamp: ${Date.now()}`;
+      const message = `Sign this message to link your wallet to Trezalink.\nTimestamp: ${Date.now()}`;
       const encodedMessage = new TextEncoder().encode(message);
       const signedMessage = await provider.signMessage(encodedMessage, "utf8");
       const signatureBase58 = (await import('bs58')).default.encode(signedMessage.signature);

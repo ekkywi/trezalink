@@ -44,7 +44,7 @@ export default function DocumentationPage() {
             </div>
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter mb-6 leading-tight">
               Mastering the<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">Kirupay Protocol.</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">Trezalink Protocol.</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
               Everything you need to integrate, scale, and secure your Web3 payment infrastructure. From basic setup to advanced webhook configurations.
@@ -83,11 +83,11 @@ export default function DocumentationPage() {
               <div className="space-y-6">
                 <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10">
                   <div className="text-xs font-bold text-blue-600 mb-1 uppercase tracking-wider">Mainnet-Beta</div>
-                  <p className="text-sm font-mono opacity-70">https://api.kirupay.com/v1</p>
+                  <p className="text-sm font-mono opacity-70">https://api.trezalink.com/v1</p>
                 </div>
                 <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10">
                   <div className="text-xs font-bold text-purple-600 mb-1 uppercase tracking-wider">Devnet (Testnet)</div>
-                  <p className="text-sm font-mono opacity-70">https://devnet.api.kirupay.com/v1</p>
+                  <p className="text-sm font-mono opacity-70">https://devnet.api.trezalink.com/v1</p>
                 </div>
               </div>
             </div>
@@ -111,7 +111,7 @@ export default function DocumentationPage() {
                 { icon: <Code className="text-blue-500" />, title: "API Reference", desc: "Detailed endpoint specs for payments, rates, and users." },
                 { icon: <MessageSquare className="text-purple-500" />, title: "Webhooks", desc: "Handling events and exponential backoff retry logic." },
                 { icon: <FileText className="text-indigo-500" />, title: "Compliance", desc: "Guidelines for transaction reporting and reconciliation." },
-                { icon: <Terminal className="text-gray-500" />, title: "CLI Tools", desc: "Managing your Kirupay account via our command line tool." },
+                { icon: <Terminal className="text-gray-500" />, title: "CLI Tools", desc: "Managing your Trezalink account via our command line tool." },
               ].map((item, i) => (
                 <div key={i} className="group bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-3xl hover:bg-white dark:hover:bg-white/10 transition-all cursor-pointer">
                   <div className="mb-4 bg-gray-100 dark:bg-white/5 w-12 h-12 flex items-center justify-center rounded-2xl group-hover:scale-110 transition-transform">

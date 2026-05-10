@@ -1,3 +1,4 @@
+// src/app/api/merchant/apikey/regenerate/route.ts
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
@@ -19,7 +20,9 @@ export async function POST(req: Request) {
         const secret = new TextEncoder().encode(process.env.JWT_SECRET);
         const { payload } = await jwtVerify(token, secret);
         const merchantId = payload.merchantId as string;
-        const newApiKey = crypto.randomUUID();
+
+        const cleanUuid = crypto.randomUUID().replace(/-/g, "");
+        const newApiKey = `tl_live_${cleanUuid}`;
 
         await prisma.merchant.update({
             where: { id: merchantId },
@@ -27,6 +30,7 @@ export async function POST(req: Request) {
         });
 
         return NextResponse.json({
+            success: true,
             message: "API key regenerated successfully",
             apiKey: newApiKey
         }, { status: 200 });
@@ -34,7 +38,7 @@ export async function POST(req: Request) {
     } catch (error) {
         console.error("Api Key regeneration error:", error);
         return NextResponse.json(
-            { error: "Internal Server Error"},
+            { error: "Internal Server Error" },
             { status: 500 }
         );
     }

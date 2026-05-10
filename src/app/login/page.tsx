@@ -89,7 +89,7 @@ export default function LoginPage() {
       const address = publicKey.toString();
 
       // 3. Buat payload unik untuk ditandatangani
-      const message = `Authenticate with Kirupay\n\nWallet: ${address}\nTimestamp: ${Date.now()}`;
+      const message = `Authenticate with Trezalink\n\nWallet: ${address}\nTimestamp: ${Date.now()}`;
       const encodedMessage = new TextEncoder().encode(message);
 
       // 4. Minta pengguna menandatangani payload menggunakan dompet mereka
@@ -141,9 +141,9 @@ export default function LoginPage() {
 
         <Link href="/" className="relative z-10 flex items-center gap-3 group">
           <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl group-hover:rotate-6 transition-transform">
-             <span className="text-white font-black text-2xl italic">K</span>
+             <span className="text-white font-black text-2xl italic">T</span>
           </div>
-          <span className="text-white font-black text-2xl tracking-tighter italic">KIRUPAY</span>
+          <span className="text-white font-black text-2xl tracking-tighter italic">Trezalink</span>
         </Link>
 
         <div className="relative z-10">
@@ -158,8 +158,8 @@ export default function LoginPage() {
 
         <div className="relative z-10 mt-8">
             <div className="text-sm text-white/60">
-              <p className="text-transparent font-bold italic bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">KIRUPAY</p>
-              <p className="text-xs mt-1">&copy; {new Date().getFullYear()} Kirupay — Global payments, borderless economy.</p>
+              <p className="text-transparent font-bold italic bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Trezalink</p>
+              <p className="text-xs mt-1">&copy; {new Date().getFullYear()} Trezalink by Trezanix — Global payments, borderless economy.</p>
             </div>
         </div>
       </section>
@@ -169,8 +169,8 @@ export default function LoginPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
           <div className="md:hidden flex justify-center mb-12">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center"><span className="text-white font-black italic">K</span></div>
-              <span className="text-gray-900 dark:text-white font-black text-xl italic tracking-tighter">KIRUPAY</span>
+              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center"><span className="text-white font-black italic">T</span></div>
+              <span className="text-gray-900 dark:text-white font-black text-xl italic tracking-tighter">Trezalink</span>
             </Link>
           </div>
 

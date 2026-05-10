@@ -58,7 +58,7 @@ export default function ArchitecturePage() {
               Trust in <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">Math</span>,<br/>Not Middlemen.
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed transition-colors">
-              Kirupay is not a bank. It is an open routing protocol built on top of high-performance decentralized ledgers. Discover why cryptographic finality is the most secure way to process global payments.
+              Trezalink is not a bank. It is an open routing protocol built on top of high-performance decentralized ledgers. Discover why cryptographic finality is the most secure way to process global payments.
             </p>
           </motion.div>
         </section>
@@ -126,7 +126,7 @@ export default function ArchitecturePage() {
           >
             <motion.div variants={popUp} className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight transition-colors">Layer 2: Protocol Execution</h2>
-              <p className="text-lg text-gray-600 dark:text-gray-400 transition-colors">How Kirupay routes your money atomically across the ledger.</p>
+              <p className="text-lg text-gray-600 dark:text-gray-400 transition-colors">How Trezalink routes your money atomically across the ledger.</p>
             </motion.div>
 
             {/* MENGHAPUS transition-all dan menggantinya dengan transition-colors agar tidak bentrok dengan Framer Motion */}
@@ -211,7 +211,7 @@ export default function ArchitecturePage() {
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white transition-colors">Strictly Non-Custodial</h3>
                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed transition-colors">
-                  Kirupay operates on a strict non-custodial model. We never hold, pool, or have access to your private keys. The smart contract acts merely as a traffic controller.
+                  Trezalink operates on a strict non-custodial model. We never hold, pool, or have access to your private keys. The smart contract acts merely as a traffic controller.
                 </p>
               </motion.div>
 

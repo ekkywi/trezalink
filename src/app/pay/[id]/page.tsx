@@ -60,7 +60,7 @@ export default async function CheckoutPage({
       {/* Footer */}
       <div className="mt-8 text-center">
         <p className="text-sm text-gray-400">
-          Powered by <span className="font-bold text-gray-600">KiruPay</span>
+          Powered by <span className="font-bold text-gray-600">Trezalink</span>
         </p>
       </div>
     </div>

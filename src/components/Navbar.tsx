@@ -6,11 +6,9 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
-  // Hook dari next-themes untuk mengendalikan mode terang/gelap
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Mencegah hydration mismatch (error warna berbeda antara server dan client)
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -18,10 +16,10 @@ export default function Navbar() {
   return (
     <nav className="relative z-50 flex items-center justify-between px-6 py-4 max-w-6xl w-full mx-auto border-b border-gray-200 dark:border-white/10 md:border md:border-gray-200 dark:md:border-white/10 bg-white/60 dark:bg-[#0a0a0f]/60 backdrop-blur-xl md:rounded-full md:mt-6 shadow-sm dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-colors duration-300">
       
-      {/* Logo Kirupay Disambung Tanpa Span */}
+      {/* Logo Trezalink Disambung Tanpa Span */}
       <Link href="/" className="text-xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-1.5 hover:opacity-80 transition-opacity">
         <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
-        Kirupay
+        Trezalink
       </Link>
 
       <div className="hidden md:flex space-x-8 text-sm font-medium text-gray-600 dark:text-gray-400">

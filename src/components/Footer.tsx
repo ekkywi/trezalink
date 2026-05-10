@@ -11,10 +11,10 @@ export default function Footer() {
         <div className="flex flex-col items-center md:items-start gap-2">
           <div className="text-lg font-bold tracking-tight text-gray-900 dark:text-white flex items-center gap-1.5 transition-colors">
             <div className="w-2 h-2 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500"></div>
-            Kirupay
+            Trezalink
           </div>
           <p className="text-xs text-gray-500 font-medium transition-colors">
-            © {new Date().getFullYear()} Kirupay. Borderless economy.
+            © {new Date().getFullYear()} Trezalink by Trezanix — Global payments, borderless economy.
           </p>
         </div>
 
