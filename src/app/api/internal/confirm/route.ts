@@ -1,6 +1,8 @@
 // src/app/api/internal/confirm/route.ts
+
 import { NextResponse } from "next/server";
 import prisma from "@/lib/neon";
+import crypto from "crypto";
 
 export async function POST(req: Request) {
   try {
@@ -22,34 +24,45 @@ export async function POST(req: Request) {
     });
 
     const webhookUrl = updatedTransaction.merchant.webhookUrl;
+    const webhookSecret = updatedTransaction.merchant.webhookSecret;
     
     if (webhookUrl) {
       try {
+        const payloadData = {
+          event: "payment.success",
+          data: {
+            orderId: updatedTransaction.orderId,
+            transactionId: updatedTransaction.id,
+            amount: updatedTransaction.amount,
+            currency: updatedTransaction.currency,
+            status: updatedTransaction.status,
+            txSignature: updatedTransaction.txSignature,
+            paidAt: updatedTransaction.updatedAt
+          }
+        };
+
+        const payloadString = JSON.stringify(payloadData);
+        
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
+        };
+
+        if (webhookSecret) {
+          const hmacSignature = crypto
+            .createHmac("sha256", webhookSecret)
+            .update(payloadString)
+            .digest("hex");
+            
+          headers["X-Trezalink-Signature"] = hmacSignature;
+        }
+
         await fetch(webhookUrl, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Di level enterprise, Anda bisa menambahkan header verifikasi seperti:
-            // "X-Trezalink-Signature": "hash_rahasia_untuk_keamanan"
-          },
-          body: JSON.stringify({
-            event: "payment.success",
-            data: {
-              orderId: updatedTransaction.orderId,
-              transactionId: updatedTransaction.id,
-              amount: updatedTransaction.amount,
-              currency: updatedTransaction.currency,
-              status: updatedTransaction.status,
-              txSignature: updatedTransaction.txSignature,
-              paidAt: updatedTransaction.updatedAt
-            }
-          }),
+          headers: headers,
+          body: payloadString,
         });
-        console.log(`Webhook sukses ditembak ke: ${webhookUrl}`);
       } catch (webhookError) {
-        // Jika server merchant sedang down, kita cukup catat error-nya
-        // Transaksi di Kirupay tetap dianggap sukses.
-        console.error(`Gagal mengirim webhook ke ${webhookUrl}:`, webhookError);
+        console.error(`Error sending webhook to ${webhookUrl}:`, webhookError);
       }
     }
 

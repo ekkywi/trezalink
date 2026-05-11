@@ -23,7 +23,8 @@ model Merchant {
   emailVerified   Boolean       @default(false)
   activationToken String?       @unique
   transactions    Transaction[]
-  webhookUrl      String? 
+  webhookUrl      String?
+  webhookSecret   String?       @unique 
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 }
