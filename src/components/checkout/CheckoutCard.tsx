@@ -1,72 +1,15 @@
 // src/components/checkout/CheckoutCard.tsx
 "use client";
 
-import { useState } from "react";
-import { Wallet, ArrowRight, Info, CheckCircle2 } from "lucide-react";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { Wallet, ArrowRight, Info, CheckCircle2, AlertTriangle } from "lucide-react";
+import { useSolanaCheckout } from "@/hooks/web3/useSolanaCheckout";
 
 export function CheckoutCard({ transaction }: { transaction: any }) {
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  // Hook Web3 Solana
-  const { connection } = useConnection();
-  const { publicKey, sendTransaction, connected } = useWallet();
-  const { setVisible } = useWalletModal();
-
-  const handlePayment = async () => {
-    if (!connected || !publicKey) {
-      setVisible(true);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const merchantPubKey = new PublicKey(transaction.merchant.walletAddress);
-      const lamports = transaction.amount * LAMPORTS_PER_SOL;
-
-      const tx = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: merchantPubKey,
-          lamports: lamports,
-        })
-      );
-
-      const { blockhash } = await connection.getLatestBlockhash();
-      tx.recentBlockhash = blockhash;
-      tx.feePayer = publicKey;
-
-      const signature = await sendTransaction(tx, connection);
-
-      await connection.confirmTransaction(signature, "confirmed");
-
-      await fetch("/api/internal/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          transactionId: transaction.id,
-          signature: signature,
-        }),
-      });
-
-      setSuccess(true);
-      
-      console.log("Transaction successful, signature:", signature);
-
-    } catch (error: any) {
-      console.error("Payment failed", error);
-      alert("Payment failed or cancelled: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { loading, success, error, connected, handlePayment } = useSolanaCheckout(transaction);
 
   if (success) {
     return (
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center border border-gray-100">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center border border-gray-100 animate-in fade-in zoom-in duration-500">
         <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle2 size={40} />
         </div>
@@ -74,7 +17,7 @@ export function CheckoutCard({ transaction }: { transaction: any }) {
         <p className="text-gray-500 mb-6">Your transaction has been confirmed on the Solana blockchain.</p>
         <button 
           onClick={() => window.location.reload()}
-          className="bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-bold hover:bg-gray-200 transition-colors"
+          className="w-full bg-gray-100 text-gray-700 py-4 rounded-xl font-bold hover:bg-gray-200 transition-colors"
         >
           Return to Merchant
         </button>
@@ -92,7 +35,9 @@ export function CheckoutCard({ transaction }: { transaction: any }) {
             <h2 className="text-xl font-black text-gray-900">{transaction.merchant.businessName}</h2>
           </div>
           <div className="bg-white p-2 rounded-xl shadow-sm border border-gray-100">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">T</div>
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+              {transaction.merchant.businessName.charAt(0).toUpperCase()}
+            </div>
           </div>
         </div>
       </div>
@@ -110,8 +55,17 @@ export function CheckoutCard({ transaction }: { transaction: any }) {
         </div>
       </div>
 
-      {/* Tombol Aksi */}
-      <div className="p-6 pt-0">
+      {/* Tombol Aksi & Error Handling */}
+      <div className="p-6 pt-0 space-y-4">
+        
+        {/* Mengganti alert() browser dengan UI Error yang elegan */}
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-xl text-xs font-bold flex items-center gap-2 animate-in fade-in">
+            <AlertTriangle size={14} className="shrink-0" />
+            <span className="break-words">{error}</span>
+          </div>
+        )}
+
         <button
           onClick={handlePayment}
           disabled={loading}
@@ -132,7 +86,7 @@ export function CheckoutCard({ transaction }: { transaction: any }) {
           )}
         </button>
         
-        <p className="text-center text-[10px] text-gray-400 mt-4 px-6">
+        <p className="text-center text-[10px] text-gray-400 px-6">
           By clicking pay, you agree to process this transaction on the Solana Blockchain.
         </p>
       </div>

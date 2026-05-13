@@ -1,39 +1,154 @@
-// components/dashboard/TransactionTable.tsx
-export function TransactionTable({ transactions }: { transactions: any[] }) {
-  if (!transactions || transactions.length === 0) {
-    return <div className="p-8 text-center text-gray-400 text-sm italic">No transactions found yet.</div>;
-  }
+// src/components/dashboard/TransactionTable.tsx
+"use client";
+
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { Search, Filter, ChevronLeft, ChevronRight, Activity } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
+
+interface TransactionTableProps {
+  transactions: any[];
+  totalPages: number;
+}
+
+export function TransactionTable({ transactions, totalPages }: TransactionTableProps) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const currentSearch = searchParams.get("search") || "";
+  const currentStatus = searchParams.get("status") || "ALL";
+  const [searchInput, setSearchInput] = useState(currentSearch);
+  const debouncedSearch = useDebounce(searchInput, 500);
+
+  const updateURL = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams);
+    
+    if (key === "search" || key === "status") {
+      params.set("page", "1");
+    }
+
+    if (value && value !== "ALL") {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
+
+    replace(`${pathname}?${params.toString()}`);
+  };
+
+  useEffect(() => {
+    if (debouncedSearch !== currentSearch) {
+      updateURL("search", debouncedSearch);
+    }
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    setSearchInput(currentSearch);
+  }, [currentSearch]);
 
   return (
-    <div className="bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-lg overflow-hidden">
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="bg-gray-50/50 dark:bg-[#1A1A1A] border-b border-gray-100 dark:border-[#2A2A2A]">
-            <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Order ID</th>
-            <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Amount</th>
-            <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-            <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Date</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-50 dark:divide-[#2A2A2A]">
-          {transactions.map((tx) => (
-            <tr key={tx.id} className="hover:bg-gray-50/50 dark:hover:bg-[#252525] transition-colors">
-              <td className="p-4 text-xs font-bold text-gray-700 dark:text-gray-300">{tx.orderId}</td>
-              <td className="p-4 text-xs font-mono font-bold text-blue-600">{tx.amount} {tx.currency}</td>
-              <td className="p-4">
-                <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase ${
-                  tx.status === 'PAID' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'
-                }`}>
-                  {tx.status}
-                </span>
-              </td>
-              <td className="p-4 text-[10px] text-gray-400 font-medium">
-                {new Date(tx.createdAt).toLocaleDateString()}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+      
+      {/* 1. KONTROL FILTER & SEARCH */}
+      <div className="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white dark:bg-[#1E1E1E] p-4 rounded-xl border border-gray-200 dark:border-[#2A2A2A] shadow-sm">
+        
+        {/* Search Bar (Tidak perlu <form> lagi) */}
+        <div className="relative w-full sm:w-72">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-gray-400" />
+          </div>
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search Order ID..."
+            className="block w-full pl-10 pr-3 py-2 bg-gray-50 dark:bg-[#151515] border border-gray-200 dark:border-[#2A2A2A] rounded-lg text-sm outline-none focus:border-blue-500 transition-all dark:text-white"
+          />
+        </div>
+
+        {/* Status Dropdown */}
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Filter className="h-4 w-4 text-gray-400" />
+          <select
+            value={currentStatus}
+            onChange={(e) => updateURL("status", e.target.value)}
+            className="block w-full sm:w-auto pl-3 pr-8 py-2 bg-gray-50 dark:bg-[#151515] border border-gray-200 dark:border-[#2A2A2A] rounded-lg text-sm font-bold text-gray-700 dark:text-gray-300 outline-none focus:border-blue-500 transition-all cursor-pointer appearance-none"
+          >
+            <option value="ALL">All Status</option>
+            <option value="PAID">Paid</option>
+            <option value="PENDING">Pending</option>
+          </select>
+        </div>
+      </div>
+
+      {/* 2. TABEL UTAMA */}
+      <div className="bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-xl overflow-hidden shadow-sm">
+        {transactions.length === 0 ? (
+          <div className="p-12 flex flex-col items-center justify-center text-gray-400">
+            <Activity className="mb-3 opacity-20" size={48} />
+            <p className="text-sm font-bold text-gray-600 dark:text-gray-300">No transactions found</p>
+            <p className="text-xs mt-1">Try adjusting your search or filters.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse whitespace-nowrap">
+              <thead>
+                <tr className="bg-gray-50 dark:bg-[#151515] border-b border-gray-100 dark:border-[#2A2A2A]">
+                  <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest rounded-tl-xl">Order ID</th>
+                  <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Amount</th>
+                  <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                  <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest rounded-tr-xl">Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50 dark:divide-[#2A2A2A]">
+                {transactions.map((tx) => (
+                  <tr key={tx.id} className="hover:bg-gray-50/50 dark:hover:bg-[#1A1A1A] transition-colors">
+                    <td className="p-4 text-xs font-bold text-gray-700 dark:text-gray-300">{tx.orderId}</td>
+                    <td className="p-4 text-xs font-mono font-bold text-blue-600 dark:text-blue-400">{tx.amount} {tx.currency}</td>
+                    <td className="p-4">
+                      <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${
+                        tx.status === 'PAID' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
+                      }`}>
+                        {tx.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-[11px] text-gray-500 font-medium">
+                      {new Date(tx.createdAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* 3. PAGINATION KONTROL */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-xl shadow-sm">
+          <p className="text-xs text-gray-500 font-medium">
+            Page <span className="font-bold text-gray-900 dark:text-white">{currentPage}</span> of <span className="font-bold text-gray-900 dark:text-white">{totalPages}</span>
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => updateURL("page", (currentPage - 1).toString())}
+              disabled={currentPage <= 1}
+              className="p-2 rounded-lg border border-gray-200 dark:border-[#2A2A2A] text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#2A2A2A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              onClick={() => updateURL("page", (currentPage + 1).toString())}
+              disabled={currentPage >= totalPages}
+              className="p-2 rounded-lg border border-gray-200 dark:border-[#2A2A2A] text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#2A2A2A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

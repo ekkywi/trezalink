@@ -1,7 +1,7 @@
 // src/app/dashboard/settings/page.tsx
 import { getCurrentMerchant } from "@/lib/auth-service";
 import { redirect } from "next/navigation";
-import { SettingsView } from "@/components/dashboard/SettingsView";
+import { SettingsView } from "@/components/dashboard/settings/SettingsView";
 
 export default async function SettingsPage() {
   const merchant = await getCurrentMerchant();

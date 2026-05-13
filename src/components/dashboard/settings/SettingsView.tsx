@@ -1,19 +1,15 @@
-// src/components/dashboard/SettingsView.tsx
+// src/components/dashboard/settings/SettingsView.tsx
 "use client";
 
 import { useState } from "react";
 import { Store, Wallet, Globe, Save, CheckCircle2, AlertCircle } from "lucide-react";
-import { useMerchantUpdate } from "@/hooks/useMerchantUpdate";
-// IMPORT KOMPONEN WALLET YANG SUDAH ANDA BUAT
+import { useMerchantUpdate } from "@/hooks/api/merchant/useMerchantUpdate";
 import { WalletOverview } from "@/components/dashboard/WalletOverview"; 
 
 export function SettingsView({ merchant }: { merchant: any }) {
   const [activeTab, setActiveTab] = useState<"profile" | "payouts" | "webhooks">("profile");
-  
-  // Local State untuk Input
   const [businessName, setBusinessName] = useState(merchant.businessName || "");
   const [webhookUrl, setWebhookUrl] = useState(merchant.webhookUrl || "");
-  
   const { updateField, loading, status } = useMerchantUpdate();
 
   return (
@@ -54,7 +50,7 @@ export function SettingsView({ merchant }: { merchant: any }) {
         </div>
       )}
 
-      {/* TAB 2: PAYOUTS (MENGGUNAKAN KOMPONEN WEB3 ANDA) */}
+      {/* TAB 2: PAYOUTS */}
       {activeTab === "payouts" && (
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
           <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-900/20 p-4 rounded-xl">
@@ -62,8 +58,6 @@ export function SettingsView({ merchant }: { merchant: any }) {
                <strong>Security Notice:</strong> To ensure your funds are safe, we require you to cryptographically sign a message using your Phantom Wallet. We do not allow manual input of wallet addresses.
              </p>
           </div>
-          
-          {/* Komponen Anda yang canggih dipanggil di sini */}
           <WalletOverview initialWallet={merchant.walletAddress || "pending"} />
         </div>
       )}

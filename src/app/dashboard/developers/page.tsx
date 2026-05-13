@@ -1,9 +1,10 @@
-// src/app/dashboard/api/page.tsx
-import { ApiConsoleView } from "@/components/dashboard/ApiConsoleView";
+// src/app/dashboard/developers/page.tsx
+import { DeveloperView } from "@/components/dashboard/developers/DeveloperView";
 import { getCurrentMerchant } from "@/lib/auth-service";
+import { View } from "lucide-react";
 import { redirect } from "next/navigation";
 
-export default async function ApiPage() {
+export default async function DevelopersPage() {
   const merchant = await getCurrentMerchant();
   if (!merchant) redirect("/login");
 
@@ -15,7 +16,7 @@ export default async function ApiPage() {
           <p className="text-xs text-gray-500">Access your API key and find code snippets to integrate Trezalink into your application.</p>
         </div>
       </div>
-      <ApiConsoleView merchant={merchant} />
+      <DeveloperView merchant={merchant} />
     </div>
   );
 }

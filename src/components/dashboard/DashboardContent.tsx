@@ -5,7 +5,6 @@ import { Sidebar } from "./Sidebar";
 import { StatCard } from "./StatCard";
 import { WalletOverview } from "./WalletOverview";
 import { TransactionTable } from "./TransactionTable";
-import { ApiConsoleView } from "./ApiConsoleView";
 import { Activity, Settings as SettingsIcon, Globe, Save } from "lucide-react";
 
 export function DashboardContent({ merchant, transactions, totalRevenue }: any) {
