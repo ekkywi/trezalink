@@ -23,6 +23,7 @@ model Merchant {
   emailVerified   Boolean       @default(false)
   activationToken String?       @unique
   transactions    Transaction[]
+  webhookLogs     WebhookLog[]
   webhookUrl      String?
   webhookSecret   String?       @unique 
   createdAt       DateTime      @default(now())
@@ -44,4 +45,17 @@ model Transaction {
   cancelUrl       String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+}
+
+// Webhook Log
+model WebhookLog {
+  id              String        @id @default(cuid())
+  merchantId      String
+  merchant        Merchant      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  event           String
+  url             String
+  status          Int?
+  payload         String
+  response        String?
+  createdAt       DateTime      @default(now())
 }

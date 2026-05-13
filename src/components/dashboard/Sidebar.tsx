@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Activity, Key, Settings, LinkIcon } from "lucide-react";
+import { LayoutDashboard, Activity, Terminal, Settings, LinkIcon } from "lucide-react";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -12,7 +12,7 @@ export function Sidebar() {
     { href: "/dashboard", label: "Portfolio", icon: <LayoutDashboard size={16}/> },
     { href: "/dashboard/payments", label: "Transactions", icon: <Activity size={16}/> },
     { href: "/dashboard/payment-links", label: "Payment Links", icon: <LinkIcon size={16}/> },
-    { href: "/dashboard/api", label: "API Console", icon: <Key size={16}/> },
+    { href: "/dashboard/developers", label: "Developers", icon: <Terminal size={16}/> }, // <-- Nama, URL, dan Icon diubah
     { href: "/dashboard/settings", label: "Settings", icon: <Settings size={16}/> },
   ];
 
@@ -27,8 +27,9 @@ export function Sidebar() {
       
       <nav className="flex-1 py-4 space-y-1 px-2">
         {menu.map((item) => {
-          // Cek apakah URL sekarang sama dengan link menu
-          const isActive = pathname === item.href;
+          const isActive = item.href === '/dashboard' 
+            ? pathname === item.href 
+            : pathname.startsWith(item.href);
           
           return (
             <Link

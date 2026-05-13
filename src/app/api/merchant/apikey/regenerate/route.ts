@@ -1,31 +1,20 @@
-// src/app/api/merchant/apikey/regenerate/route.ts
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { jwtVerify } from "jose";
 import crypto from "crypto";
 import prisma from "@/lib/neon";
+import { getCurrentMerchant } from "@/lib/auth-service";
 
-export async function POST(req: Request) {
+export async function POST() {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get("auth-token")?.value;
-
-        if (!token) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
-            );
+        const merchant = await getCurrentMerchant();
+        
+        if (!merchant) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-        const { payload } = await jwtVerify(token, secret);
-        const merchantId = payload.merchantId as string;
-
-        const cleanUuid = crypto.randomUUID().replace(/-/g, "");
-        const newApiKey = `tl_live_${cleanUuid}`;
+        const newApiKey = `tl_live_${crypto.randomBytes(32).toString('hex')}`;
 
         await prisma.merchant.update({
-            where: { id: merchantId },
+            where: { id: merchant.id },
             data: { apiKey: newApiKey }
         });
 

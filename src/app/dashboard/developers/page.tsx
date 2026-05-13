@@ -9,8 +9,14 @@ export default async function ApiPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold dark:text-white text-gray-800">API Console</h2>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-xl font-bold dark:text-white text-gray-800">API Console</h2>
+          <p className="text-xs text-gray-500">Access your API key and find code snippets to integrate Trezalink into your application.</p>
+        </div>
+      </div>
       <ApiConsoleView merchant={merchant} />
     </div>
   );
 }
+

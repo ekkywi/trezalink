@@ -22,9 +22,9 @@ export function LinkTable({ links }: { links: any[] }) {
         <div className="w-16 h-16 bg-gray-50 dark:bg-[#151515] rounded-full flex items-center justify-center mb-4">
           <ExternalLink className="text-gray-400" size={24} />
         </div>
-        <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Belum Ada Payment Link</h3>
+        <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">There is no payment link yet</h3>
         <p className="text-xs text-gray-500 max-w-sm">
-          Anda belum membuat tagihan manual. Klik tombol "Create Link" di atas untuk mulai menerima pembayaran.
+          You haven't created any manual invoices yet. Click the "Create Link" button above to start accepting payments.
         </p>
       </div>
     );

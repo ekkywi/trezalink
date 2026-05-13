@@ -14,9 +14,16 @@ export default async function PaymentsPage() {
   });
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold dark:text-white text-gray-800">Transaction History</h2>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-xl font-bold dark:text-white text-gray-800">Transaction History</h2>
+          <p className="text-xs text-gray-500">View and manage your transaction history.</p>
+        </div>
+      </div>
       <TransactionTable transactions={transactions} />
     </div>
   );
 }
+
+    
