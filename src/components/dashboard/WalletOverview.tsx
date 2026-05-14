@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wallet, Unplug, Link as LinkIcon, CheckCircle2, Loader2, AlertTriangle, XCircle } from "lucide-react";
+import { Wallet, Unplug, Link as LinkIcon, CheckCircle2, Loader2, AlertTriangle, XCircle, Coins } from "lucide-react";
 import { useWalletConnect } from "@/hooks/api/merchant/useWalletConnect";
 
 interface WalletOverviewProps {
@@ -10,7 +10,8 @@ interface WalletOverviewProps {
 }
 
 export function WalletOverview({ initialWallet }: WalletOverviewProps) {
-  const { wallet, isLoading, toast, handleConnect, executeDisconnect } = useWalletConnect(initialWallet);
+  // Tambahkan 'balance' dan 'isFetchingBalance' dari Hook
+  const { wallet, balance, isFetchingBalance, isLoading, toast, handleConnect, executeDisconnect } = useWalletConnect(initialWallet);
   
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const isPending = wallet.includes("pending");
@@ -71,11 +72,32 @@ export function WalletOverview({ initialWallet }: WalletOverviewProps) {
         {!isPending && <CheckCircle2 className="w-5 h-5 text-green-500" />}
       </div>
 
-      <div className="mb-6">
-        <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">Status</p>
-        <p className={`font-mono text-sm ${isPending ? "text-gray-400" : "text-blue-600 dark:text-blue-400 font-bold"}`}>
-          {formatWallet(wallet)}
-        </p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">Status</p>
+          <p className={`font-mono text-sm ${isPending ? "text-gray-400" : "text-blue-600 dark:text-blue-400 font-bold"}`}>
+            {formatWallet(wallet)}
+          </p>
+        </div>
+
+        {/* TAMPILAN SALDO REAL-TIME */}
+        {!isPending && (
+          <div className="text-right">
+            <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1 flex items-center justify-end gap-1">
+              <Coins size={12} /> Balance
+            </p>
+            {isFetchingBalance ? (
+              <div className="flex items-center justify-end gap-1 text-gray-400">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span className="text-xs font-mono">Syncing...</span>
+              </div>
+            ) : (
+              <p className="font-mono text-sm font-bold text-gray-900 dark:text-white">
+                {balance !== null ? `${balance.toFixed(4)} SOL` : "0.0000 SOL"}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {isPending ? (

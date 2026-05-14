@@ -1,10 +1,13 @@
-// src/hooks/useWalletConnect.ts
-import { useState } from "react";
+// src/hooks/api/merchant/useWalletConnect.ts
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 export function useWalletConnect(initialWallet: string) {
   const router = useRouter();
   const [wallet, setWallet] = useState(initialWallet);
+  const [balance, setBalance] = useState<number | null>(null);
+  const [isFetchingBalance, setIsFetchingBalance] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
@@ -12,6 +15,33 @@ export function useWalletConnect(initialWallet: string) {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
   };
+
+  const fetchBalance = async (walletAddress: string) => {
+    if (walletAddress.includes("pending")) return;
+    
+    setIsFetchingBalance(true);
+    try {
+      // Catatan: Gunakan "https://api.mainnet-beta.solana.com" jika sudah rilis sungguhan
+      const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+      const pubKey = new PublicKey(walletAddress);
+      
+      const lamports = await connection.getBalance(pubKey);
+      setBalance(lamports / LAMPORTS_PER_SOL);
+    } catch (error) {
+      console.error("Gagal mengambil saldo", error);
+      setBalance(null);
+    } finally {
+      setIsFetchingBalance(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!wallet.includes("pending")) {
+      fetchBalance(wallet);
+    } else {
+      setBalance(null);
+    }
+  }, [wallet]);
 
   const handleConnect = async () => {
     setIsLoading(true);
@@ -31,12 +61,7 @@ export function useWalletConnect(initialWallet: string) {
       const res = await fetch("/api/merchant/wallet/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "link",
-          publicKey: pubKey,
-          signature: signatureBase58,
-          message: message
-        })
+        body: JSON.stringify({ action: "link", publicKey: pubKey, signature: signatureBase58, message })
       });
       
       const data = await res.json();
@@ -65,6 +90,7 @@ export function useWalletConnect(initialWallet: string) {
       if (!res.ok) throw new Error(data.error);
 
       setWallet(data.walletAddress);
+      setBalance(null);
       
       const provider = (window as any).solana;
       if (provider) await provider.disconnect();
@@ -80,5 +106,5 @@ export function useWalletConnect(initialWallet: string) {
     }
   };
 
-  return { wallet, isLoading, toast, handleConnect, executeDisconnect };
+  return { wallet, balance, isFetchingBalance, isLoading, toast, handleConnect, executeDisconnect };
 }

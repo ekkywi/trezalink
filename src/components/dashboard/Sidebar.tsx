@@ -3,16 +3,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Activity, Terminal, Settings, LinkIcon } from "lucide-react";
+import { LayoutDashboard, Activity, Terminal, Settings, LinkIcon, BarChart3 } from "lucide-react";
 
 export function Sidebar() {
   const pathname = usePathname();
 
   const menu = [
     { href: "/dashboard", label: "Portfolio", icon: <LayoutDashboard size={16}/> },
+    { href: "/dashboard/analytics", label: "Analytics", icon: <BarChart3 size={16}/> },
     { href: "/dashboard/payments", label: "Transactions", icon: <Activity size={16}/> },
     { href: "/dashboard/payment-links", label: "Payment Links", icon: <LinkIcon size={16}/> },
-    { href: "/dashboard/developers", label: "Developers", icon: <Terminal size={16}/> }, // <-- Nama, URL, dan Icon diubah
+    { href: "/dashboard/developers", label: "Developers", icon: <Terminal size={16}/> },
     { href: "/dashboard/settings", label: "Settings", icon: <Settings size={16}/> },
   ];
 
