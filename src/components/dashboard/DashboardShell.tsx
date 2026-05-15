@@ -15,7 +15,7 @@ export function DashboardShell({
 }) {
   return (
     <div className="flex h-screen overflow-hidden bg-[#F4F5F7] dark:bg-[#121212] transition-colors duration-300">
-      <Sidebar />
+      <Sidebar role={merchant?.role} />
 
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         <TopNav merchant={merchant} />

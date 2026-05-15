@@ -11,6 +11,11 @@ datasource db {
   provider  = "postgresql"
 }
 
+enum Role {
+  ADMIN
+  MERCHANT
+}
+
 // User/Merchant
 model Merchant {
   id              String        @id @default(cuid())
@@ -21,6 +26,7 @@ model Merchant {
   apiKey          String        @unique @default(uuid()) 
   isActive        Boolean       @default(true)
   emailVerified   Boolean       @default(false)
+  role            Role          @default(MERCHANT)
   activationToken String?       @unique
   transactions    Transaction[]
   webhookLogs     WebhookLog[]

@@ -22,7 +22,7 @@ export default function Navbar() {
         Trezalink
       </Link>
 
-      <div className="hidden md:flex space-x-8 text-sm font-medium text-gray-600 dark:text-gray-400">
+      <div className="hidden md:flex space-x-8 text-sm font-bold text-gray-600 dark:text-gray-400">
         <Link href="/architecture" className="hover:text-blue-600 dark:hover:text-white transition-colors">Architecture</Link>
         <Link href="/developer" className="hover:text-blue-600 dark:hover:text-white transition-colors">Developer</Link>
         <Link href="/docs" className="hover:text-blue-600 dark:hover:text-white transition-colors">Documentation</Link>
