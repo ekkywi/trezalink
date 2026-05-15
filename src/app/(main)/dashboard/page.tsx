@@ -6,7 +6,7 @@ import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { getCurrentMerchant } from "@/lib/auth-service";
 import prisma from "@/lib/neon";
 import { redirect } from "next/navigation";
-import { Activity, CreditCard, CheckCircle2 } from "lucide-react";
+import { Activity, CreditCard, CheckCircle2, LayoutDashboard } from "lucide-react";
 import SetupGatekeeper from "@/components/dashboard/SetupGatekeeper";
 
 export default async function DashboardPage() {
@@ -83,7 +83,9 @@ export default async function DashboardPage() {
       
       {/* Header */}
       <div>
-        <h2 className="text-xl font-bold dark:text-white text-gray-900">Dashboard Overview</h2>
+        <h2 className="text-2xl font-bold dark:text-white text-gray-900 flex items-center gap-2">
+          <LayoutDashboard className="text-blue-500" /> Dashboard Overview
+        </h2>
         <p className="text-sm text-gray-500 mt-1">Welcome back, <strong className="text-gray-700 dark:text-gray-300">{merchant.businessName || "Merchant"}</strong></p>
       </div>
 

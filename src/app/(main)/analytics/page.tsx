@@ -32,7 +32,7 @@ export default async function AnalyticsPage() {
     prisma.transaction.groupBy({
       by: ['customerEmail', 'buyerWallet'], 
       where: { merchantId: merchant.id, status: 'PAID' },
-      _sum: { amount: true }, // Biarkan ini menggunakan amount kotor untuk melihat daya beli pelanggan
+      _sum: { amount: true },
       _count: { id: true },
       orderBy: { _sum: { amount: 'desc' } },
       take: 5,
@@ -42,7 +42,6 @@ export default async function AnalyticsPage() {
     prisma.transaction.aggregate({
       where: { merchantId: merchant.id },
       _count: { id: true },
-      // Kita tambahkan sum untuk netAmount khusus transaksi sukses
       _sum: { netAmount: true }, 
     }),
 

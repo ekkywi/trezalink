@@ -182,15 +182,15 @@ export default async function AdminOverviewPage() {
                   </td>
                   <td className="p-5 text-right">
                     <a 
-                      href={tx.signature ? `https://explorer.solana.com/tx/${tx.signature}?cluster=devnet` : '#'} 
+                      href={tx.txSignature ? `https://explorer.solana.com/tx/${tx.txSignature}?cluster=devnet` : '#'} 
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`inline-flex p-2 rounded-lg transition-all ${
-                        tx.signature 
+                        tx.txSignature 
                           ? "text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 dark:hover:text-blue-400" 
                           : "text-gray-300 dark:text-[#2A2A2A] cursor-not-allowed"
                       }`}
-                      title={tx.signature ? "View on Solscan" : "No signature yet"}
+                      title={tx.txSignature ? "View on Solana Explorer" : "No signature yet"}
                     >
                       <ArrowUpRight size={16} />
                     </a>

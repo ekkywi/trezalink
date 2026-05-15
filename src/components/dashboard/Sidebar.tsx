@@ -12,7 +12,9 @@ import {
   BarChart3,
   ShieldAlert,
   UserCog,
-  Wrench
+  Wrench,
+  Landmark,
+  Globe
 } from "lucide-react";
 
 interface SidebarProps {
@@ -65,6 +67,8 @@ export function Sidebar({ role }: SidebarProps) {
     title: "ADMINISTRATION",
     items: [
       { href: "/admin/overview", label: "Overview", icon: <LayoutDashboard size={16}/> },
+      { href: "/admin/revenue", label: "Revenue & Treasury", icon: <Landmark size={16}/> },
+      { href: "/admin/transactions", label: "Global Ledger", icon: <Globe size={16}/> },
       { href: "/admin/merchants", label: "Merchant List", icon: <UserCog size={16}/> },
       { href: "/admin/maintenance", label: "Maintenance", icon: <Wrench size={16}/> },
     ]

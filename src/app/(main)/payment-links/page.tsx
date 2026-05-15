@@ -4,6 +4,7 @@ import prisma from "@/lib/neon";
 import { redirect } from "next/navigation";
 import { CreateLinkButton } from "@/components/dashboard/CreateLinkButton";
 import { LinkTable } from "@/components/dashboard/LinkTable";
+import { LinkIcon } from "lucide-react";
 
 // Tentukan jumlah data per halaman
 const ITEMS_PER_PAGE = 10;
@@ -58,9 +59,12 @@ export default async function PaymentLinksPage({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-bold dark:text-white text-gray-900">Payment Links</h2>
-          <p className="text-xs text-gray-500 mt-1">Create and manage no-code payment links for your customers.</p>
+          <h2 className="text-2xl font-bold dark:text-white text-gray-900 flex items-center gap-2">
+            <LinkIcon className="text-blue-500" /> Payment Links
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">Create and manage no-code payment links for your customers.</p>
         </div>
+
         <CreateLinkButton merchantId={merchant.id} />
       </div>
 

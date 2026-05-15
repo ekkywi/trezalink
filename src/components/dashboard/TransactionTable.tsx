@@ -2,7 +2,7 @@
 "use client";
 
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { Search, Filter, ChevronLeft, ChevronRight, Activity } from "lucide-react";
+import { Search, Filter, ChevronLeft, ChevronRight, Activity, ArrowUpRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -50,8 +50,8 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
       
+      {/* FILTER & SEARCH BAR */}
       <div className="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white dark:bg-[#1E1E1E] p-4 rounded-xl border border-gray-200 dark:border-[#2A2A2A] shadow-sm">
-        
         <div className="relative w-full sm:w-72">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-4 w-4 text-gray-400" />
@@ -79,6 +79,7 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
         </div>
       </div>
 
+      {/* TRANSACTION TABLE */}
       <div className="bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-xl overflow-hidden shadow-sm">
         {transactions.length === 0 ? (
           <div className="p-12 flex flex-col items-center justify-center text-gray-400">
@@ -96,12 +97,13 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
                   <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fee (0.3%)</th>
                   <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Net</th>
                   <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-                  <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest rounded-tr-xl">Date</th>
+                  <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Date</th>
+                  <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right rounded-tr-xl">Explorer</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-[#2A2A2A]">
                 {transactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-gray-50/50 dark:hover:bg-[#1A1A1A] transition-colors">
+                  <tr key={tx.id} className="hover:bg-gray-50/50 dark:hover:bg-[#1A1A1A] transition-colors group">
                     <td className="p-4 text-xs font-bold text-gray-700 dark:text-gray-300">{tx.orderId}</td>
                     
                     {/* Gross */}
@@ -117,6 +119,7 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
                       {tx.netAmount ? `${tx.netAmount} ${tx.currency}` : '-'}
                     </td>
 
+                    {/* Status */}
                     <td className="p-4">
                       <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${
                         tx.status === 'PAID' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
@@ -124,8 +127,27 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
                         {tx.status}
                       </span>
                     </td>
+                    
+                    {/* Date */}
                     <td className="p-4 text-[11px] text-gray-500 font-medium">
                       {new Date(tx.createdAt).toLocaleDateString()}
+                    </td>
+
+                    {/* Explorer Link (NEW) */}
+                    <td className="p-4 text-right">
+                      <a 
+                        href={tx.txSignature ? `https://explorer.solana.com/tx/${tx.txSignature}?cluster=devnet` : '#'} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`inline-flex p-2 rounded-lg transition-all ${
+                          tx.txSignature 
+                            ? "text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 dark:hover:text-blue-400 opacity-0 group-hover:opacity-100" 
+                            : "text-gray-300 dark:text-[#2A2A2A] cursor-not-allowed opacity-50"
+                        }`}
+                        title={tx.txSignature ? "Verify on Solana Explorer" : "No blockchain record yet"}
+                      >
+                        <ArrowUpRight size={16} />
+                      </a>
                     </td>
                   </tr>
                 ))}
@@ -135,6 +157,7 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
         )}
       </div>
 
+      {/* PAGINATION */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-xl shadow-sm">
           <p className="text-xs text-gray-500 font-medium">

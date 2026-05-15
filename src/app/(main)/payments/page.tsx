@@ -2,6 +2,7 @@
 import { TransactionTable } from "@/components/dashboard/TransactionTable";
 import { getCurrentMerchant } from "@/lib/auth-service";
 import prisma from "@/lib/neon";
+import { Activity } from "lucide-react";
 import { redirect } from "next/navigation";
 
 // Tentukan berapa banyak baris per halaman
@@ -60,8 +61,10 @@ export default async function PaymentsPage({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-bold dark:text-white text-gray-900">Transaction History</h2>
-          <p className="text-xs text-gray-500 mt-1">View and manage your incoming Solana payments.</p>
+          <h2 className="text-2xl font-bold dark:text-white text-gray-900 flex items-center gap-2">
+            <Activity className="text-blue-500" /> Transaction History
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">View and manage your incoming Solana payments.</p>
         </div>
       </div>
       
