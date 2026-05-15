@@ -43,6 +43,9 @@ model Transaction {
   customerEmail   String?
   successUrl      String?
   cancelUrl       String?
+  source          String        @default("PAYMENT_LINK")
+  buyerWallet     String?
+  walletProvider  String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 }

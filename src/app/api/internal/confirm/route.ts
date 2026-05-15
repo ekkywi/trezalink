@@ -5,7 +5,7 @@ import crypto from "crypto";
 
 export async function POST(req: Request) {
   try {
-    const { transactionId, signature } = await req.json();
+    const { transactionId, signature, buyerWallet, walletProvider } = await req.json();
 
     if (!transactionId || !signature) {
       return NextResponse.json({ error: "Missing data" }, { status: 400 });
@@ -15,7 +15,9 @@ export async function POST(req: Request) {
       where: { id: transactionId },
       data: { 
         status: "PAID",
-        txSignature: signature
+        txSignature: signature,
+        buyerWallet: buyerWallet || null,
+        walletProvider: walletProvider || null
       },
       include: {
         merchant: true 
@@ -37,6 +39,8 @@ export async function POST(req: Request) {
           currency: updatedTransaction.currency,
           status: updatedTransaction.status,
           txSignature: updatedTransaction.txSignature,
+          buyerWallet: updatedTransaction.buyerWallet,
+          walletProvider: updatedTransaction.walletProvider,
           paidAt: updatedTransaction.updatedAt
         }
       };

@@ -96,6 +96,7 @@ export async function POST(req: Request) {
                 successUrl: successUrl || null,
                 cancelUrl: cancelUrl || null,
                 status: "PENDING",
+                source: "API",
                 createdAt: new Date(),
             },
         });

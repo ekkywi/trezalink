@@ -18,7 +18,8 @@ export default async function AnalyticsPage() {
     topCustomers, 
     totalStats,
     historicalRaw,
-    peakHoursRaw
+    peakHoursRaw,
+    sourceDistribution 
   ] = await Promise.all([
     // 1. Distribusi Status (Donut Chart)
     prisma.transaction.groupBy({
@@ -27,9 +28,9 @@ export default async function AnalyticsPage() {
       _count: { id: true },
     }),
 
-    // 2. Pelanggan Teratas (Leaderboard)
+    // 2. Pelanggan Teratas (Leaderboard) - Tambah buyerWallet
     prisma.transaction.groupBy({
-      by: ['customerEmail'],
+      by: ['customerEmail', 'buyerWallet'], 
       where: { merchantId: merchant.id, status: 'PAID' },
       _sum: { amount: true },
       _count: { id: true },
@@ -65,7 +66,14 @@ export default async function AnalyticsPage() {
       WHERE "merchantId" = ${merchant.id} AND status = 'PAID'
       GROUP BY 1 
       ORDER BY 1 ASC
-    `
+    `,
+    
+    // 6. Query Baru: Revenue by Source
+    prisma.transaction.groupBy({
+      by: ['source'],
+      where: { merchantId: merchant.id, status: 'PAID' },
+      _count: { id: true }
+    })
   ]);
 
   const donutData = statusDistribution.map(item => ({
@@ -73,14 +81,15 @@ export default async function AnalyticsPage() {
     value: item._count.id
   }));
 
-  // Mockup Revenue Source (Karena kita belum punya kolom 'source' di DB)
-  // Kita asumsikan transaksi tanpa email biasanya dari Payment Link, yang ada email dari API.
-  const apiTxCount = topCustomers.filter(c => c.customerEmail).reduce((a, b) => a + b._count.id, 0);
-  const linkTxCount = totalStats._count.id - apiTxCount;
-  const sourceData = [
-    { name: "API Integration", value: apiTxCount > 0 ? apiTxCount : 10 }, 
-    { name: "Payment Links", value: linkTxCount > 0 ? linkTxCount : 25 }
-  ];
+  const sourceData = sourceDistribution.map(item => ({
+    name: item.source === "API" ? "API Integration" : "Payment Links",
+    value: Number(item._count.id)
+  }));
+
+  const formattedTopCustomers = topCustomers.map(c => ({
+    ...c,
+    displayName: c.customerEmail || (c.buyerWallet ? `${c.buyerWallet.slice(0, 6)}...${c.buyerWallet.slice(-4)}` : "Anonymous Wallet"),
+  }));
 
   const historyMap = new Map();
   (historicalRaw as any[]).forEach(row => {
@@ -98,7 +107,6 @@ export default async function AnalyticsPage() {
     const hourIdx = Number(row.hour);
     peakHoursData[hourIdx].count = Number(row.count);
   });
-
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-10">
@@ -161,7 +169,8 @@ export default async function AnalyticsPage() {
         </div>
         <div className="lg:col-span-5 bg-white dark:bg-[#1E1E1E] p-6 rounded-2xl border border-gray-200 dark:border-[#2A2A2A] shadow-sm">
           <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-6">Top Spending Customers</h3>
-          <TopCustomersTable customers={topCustomers} />
+          {/* 5. Mengirimkan data yang sudah diformat ke komponen */}
+          <TopCustomersTable customers={formattedTopCustomers} />
         </div>
       </div>
     </div>

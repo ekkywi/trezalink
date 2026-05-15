@@ -8,9 +8,8 @@ export function useSolanaCheckout(transaction: any) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const { connection } = useConnection();
-  const { publicKey, sendTransaction, connected } = useWallet();
+  const { publicKey, wallet, sendTransaction, connected } = useWallet();
   const { setVisible } = useWalletModal();
 
   const handlePayment = async () => {
@@ -24,7 +23,7 @@ export function useSolanaCheckout(transaction: any) {
     
     try {
       const merchantPubKey = new PublicKey(transaction.merchant.walletAddress);
-      const lamports = transaction.amount * LAMPORTS_PER_SOL;
+      const lamports = Math.round(transaction.amount * LAMPORTS_PER_SOL); 
 
       const tx = new Transaction().add(
         SystemProgram.transfer({
@@ -48,6 +47,8 @@ export function useSolanaCheckout(transaction: any) {
         body: JSON.stringify({
           transactionId: transaction.id,
           signature: signature,
+          buyerWallet: publicKey.toBase58(),
+          walletProvider: wallet?.adapter?.name || "Unknown",
         }),
       });
 
