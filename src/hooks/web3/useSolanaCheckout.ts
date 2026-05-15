@@ -2,12 +2,26 @@
 import { useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { WalletError } from "@solana/wallet-adapter-base";
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
-export function useSolanaCheckout(transaction: any) {
+export interface CheckoutTransaction {
+  id: string;
+  amount: number;
+  merchant: {
+    walletAddress: string;
+  };
+}
+
+const PLATFORM_FEE_PERCENTAGE = 0.003; // 0.3%
+const DEFAULT_TREASURY_ERROR = "System Configuration Error: Treasury wallet is missing.";
+const GENERAL_PAYMENT_ERROR = "Payment failed or was cancelled by the user.";
+
+export function useSolanaCheckout(transaction: CheckoutTransaction) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const { connection } = useConnection();
   const { publicKey, wallet, sendTransaction, connected } = useWallet();
   const { setVisible } = useWalletModal();
@@ -20,26 +34,55 @@ export function useSolanaCheckout(transaction: any) {
 
     setLoading(true);
     setError(null);
+    setSuccess(false);
     
     try {
-      const merchantPubKey = new PublicKey(transaction.merchant.walletAddress);
-      const lamports = Math.round(transaction.amount * LAMPORTS_PER_SOL); 
+      const treasuryAddress = process.env.NEXT_PUBLIC_TREASURY_WALLET;
+      if (!treasuryAddress) {
+        throw new Error(DEFAULT_TREASURY_ERROR);
+      }
 
-      const tx = new Transaction().add(
+      const merchantPubKey = new PublicKey(transaction.merchant.walletAddress);
+      const treasuryPubKey = new PublicKey(treasuryAddress);
+      const totalLamports = Math.round(transaction.amount * LAMPORTS_PER_SOL);
+      const feeLamports = Math.round(totalLamports * PLATFORM_FEE_PERCENTAGE); 
+      const merchantLamports = totalLamports - feeLamports; 
+      
+      const tx = new Transaction();
+
+      tx.add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: merchantPubKey,
-          lamports: lamports,
+          lamports: merchantLamports,
         })
       );
 
-      const { blockhash } = await connection.getLatestBlockhash();
-      tx.recentBlockhash = blockhash;
+      if (feeLamports > 0) {
+        tx.add(
+          SystemProgram.transfer({
+            fromPubkey: publicKey,
+            toPubkey: treasuryPubKey,
+            lamports: feeLamports,
+          })
+        );
+      }
+
+      const latestBlockhash = await connection.getLatestBlockhash("confirmed");
+      tx.recentBlockhash = latestBlockhash.blockhash;
       tx.feePayer = publicKey;
 
       const signature = await sendTransaction(tx, connection);
 
-      await connection.confirmTransaction(signature, "confirmed");
+      const confirmation = await connection.confirmTransaction({
+        signature: signature,
+        blockhash: latestBlockhash.blockhash,
+        lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+      }, "confirmed");
+
+      if (confirmation.value.err) {
+        throw new Error("Transaction confirmed but resulted in an error on-chain.");
+      }
 
       const res = await fetch("/api/internal/confirm", {
         method: "POST",
@@ -52,14 +95,26 @@ export function useSolanaCheckout(transaction: any) {
         }),
       });
 
-      if (!res.ok) throw new Error("Transaction recorded on chain, but failed to sync with server.");
+      if (!res.ok) {
+        throw new Error("Transaction recorded on the blockchain, but failed to sync with the server.");
+      }
 
       setSuccess(true);
-      console.log("Transaction successful, signature:", signature);
 
-    } catch (err: any) {
-      console.error("Payment failed", err);
-      setError(err.message || "Payment failed or cancelled."); 
+    } catch (err: unknown) {
+      let displayMessage = GENERAL_PAYMENT_ERROR;
+
+      if (err instanceof WalletError) {
+        displayMessage = err.message || displayMessage;
+      } else if (err instanceof Error) {
+        displayMessage = err.message;
+      }
+
+      if (process.env.NODE_ENV === "development") {
+        console.error("[Solana Checkout Error]:", err);
+      }
+
+      setError(displayMessage); 
     } finally {
       setLoading(false);
     }

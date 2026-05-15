@@ -22,7 +22,7 @@ export default async function DashboardLayout({
 
   const totalRevenue = transactions
     .filter((tx) => tx.status === "PAID")
-    .reduce((acc, tx) => acc + (tx.amount || 0), 0);
+    .reduce((acc, tx) => acc + (tx.netAmount ?? tx.amount ?? 0), 0);
 
   return (
     <DashboardShell 

@@ -11,13 +11,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing data" }, { status: 400 });
     }
 
+    // 1. Ambil data transaksi lama untuk mengetahui nominal awal (Gross)
+    const existingTx = await prisma.transaction.findUnique({
+      where: { id: transactionId }
+    });
+
+    if (!existingTx) {
+      return NextResponse.json({ error: "Transaction not found" }, { status: 404 });
+    }
+
+    // 2. Hitung Fee 0.3% dan Net Amount
+    const grossAmount = existingTx.amount;
+    const feeAmount = grossAmount * 0.003; 
+    const netAmount = grossAmount - feeAmount;
+
+    // 3. Update status beserta perhitungan fee
     const updatedTransaction = await prisma.transaction.update({
       where: { id: transactionId },
       data: { 
         status: "PAID",
         txSignature: signature,
         buyerWallet: buyerWallet || null,
-        walletProvider: walletProvider || null
+        walletProvider: walletProvider || null,
+        feeAmount: feeAmount,
+        netAmount: netAmount
       },
       include: {
         merchant: true 
@@ -35,7 +52,9 @@ export async function POST(req: Request) {
         data: {
           orderId: updatedTransaction.orderId,
           transactionId: updatedTransaction.id,
-          amount: updatedTransaction.amount,
+          grossAmount: updatedTransaction.amount,
+          platformFee: updatedTransaction.feeAmount,
+          netAmount: updatedTransaction.netAmount,
           currency: updatedTransaction.currency,
           status: updatedTransaction.status,
           txSignature: updatedTransaction.txSignature,

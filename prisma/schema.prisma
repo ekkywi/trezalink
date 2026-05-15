@@ -37,6 +37,8 @@ model Transaction {
   merchant        Merchant      @relation(fields: [merchantId], references: [id])
   orderId         String
   amount          Float
+  feeAmount       Float?
+  netAmount       Float?
   currency        String        @default("SOL")
   status          String        @default("PENDING")
   txSignature     String?       @unique

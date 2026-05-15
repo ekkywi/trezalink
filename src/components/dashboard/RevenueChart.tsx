@@ -17,7 +17,6 @@ export function RevenueChart({ data }: RevenueChartProps) {
   }
 
   return (
-    // INI KUNCI FIX-NYA: Gunakan style inline untuk height absolut
     <div style={{ width: '100%', height: 300 }}>
       <ResponsiveContainer width="100%" height={300} minWidth={0} minHeight={0}>
         <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -33,7 +32,8 @@ export function RevenueChart({ data }: RevenueChartProps) {
           <Tooltip 
             contentStyle={{ backgroundColor: '#1E1E1E', borderColor: '#2A2A2A', borderRadius: '12px', color: '#fff' }}
             itemStyle={{ color: '#3b82f6', fontWeight: 'bold' }}
-            formatter={(value: number) => [`${value.toFixed(2)} SOL`, 'Revenue']}
+            // UBAH LABEL REVENUE MENJADI NET REVENUE DI SINI
+            formatter={(value: number) => [`${value.toFixed(4)} SOL`, 'Net Revenue']}
           />
           <Area type="monotone" dataKey="amount" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorAmount)" />
         </AreaChart>

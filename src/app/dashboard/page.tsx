@@ -38,18 +38,22 @@ export default async function DashboardPage() {
     last7DaysTx 
   ] = await Promise.all([
     prisma.transaction.findMany({ where: { merchantId: merchant.id }, orderBy: { createdAt: "desc" }, take: 5 }),
-    prisma.transaction.aggregate({ where: { merchantId: merchant.id, status: "PAID", createdAt: { gte: startOfThisMonth } }, _sum: { amount: true } }),
-    prisma.transaction.aggregate({ where: { merchantId: merchant.id, status: "PAID", createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } }, _sum: { amount: true } }),
+    // PERBAIKAN: Tambahkan netAmount ke dalam _sum
+    prisma.transaction.aggregate({ where: { merchantId: merchant.id, status: "PAID", createdAt: { gte: startOfThisMonth } }, _sum: { netAmount: true, amount: true } }),
+    prisma.transaction.aggregate({ where: { merchantId: merchant.id, status: "PAID", createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } }, _sum: { netAmount: true, amount: true } }),
     prisma.transaction.count({ where: { merchantId: merchant.id } }),
     prisma.transaction.count({ where: { merchantId: merchant.id, status: "PAID" } }),
+    // PERBAIKAN: Tambahkan netAmount ke dalam select
     prisma.transaction.findMany({ 
       where: { merchantId: merchant.id, status: "PAID", createdAt: { gte: sevenDaysAgo } },
-      select: { amount: true, createdAt: true }
+      select: { netAmount: true, amount: true, createdAt: true }
     }),
   ]);
 
-  const thisMonthRev = thisMonthRevAgg._sum.amount || 0;
-  const lastMonthRev = lastMonthRevAgg._sum.amount || 0;
+  // PERBAIKAN: Prioritaskan netAmount
+  const thisMonthRev = thisMonthRevAgg._sum.netAmount ?? thisMonthRevAgg._sum.amount ?? 0;
+  const lastMonthRev = lastMonthRevAgg._sum.netAmount ?? lastMonthRevAgg._sum.amount ?? 0;
+  
   let revenueTrend = 0;
   if (lastMonthRev > 0) revenueTrend = ((thisMonthRev - lastMonthRev) / lastMonthRev) * 100;
   else if (thisMonthRev > 0) revenueTrend = 100;
@@ -69,7 +73,8 @@ export default async function DashboardPage() {
     const txDateStr = new Date(tx.createdAt).toDateString();
     const dayIndex = chartData.findIndex(d => d.fullDateString === txDateStr);
     if (dayIndex !== -1) {
-      chartData[dayIndex].amount += tx.amount;
+      // PERBAIKAN: Masukkan netAmount ke grafik
+      chartData[dayIndex].amount += (tx.netAmount ?? tx.amount ?? 0);
     }
   });
 
@@ -84,26 +89,25 @@ export default async function DashboardPage() {
 
       {/* Baris 1: Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard label="Revenue (This Month)" value={`${thisMonthRev.toFixed(2)} SOL`} icon={<Activity size={18} />} trend={`${revenueTrend > 0 ? '+' : ''}${revenueTrend.toFixed(1)}%`} trendUp={revenueTrend >= 0} description="vs last month" />
+        {/* Opsional: Anda bisa mengubah label menjadi "Net Revenue (This Month)" agar lebih informatif */}
+        <StatCard label="Net Revenue (This Month)" value={`${thisMonthRev.toFixed(4)} SOL`} icon={<Activity size={18} />} trend={`${revenueTrend > 0 ? '+' : ''}${revenueTrend.toFixed(1)}%`} trendUp={revenueTrend >= 0} description="vs last month" />
         <StatCard label="Total Transactions" value={totalTxCount.toString()} icon={<CreditCard size={18} />} trend="All time" trendUp={true} description="total volume" />
         <StatCard label="Success Rate" value={`${successRate.toFixed(1)}%`} icon={<CheckCircle2 size={18} />} trend="Paid vs Failed" trendUp={successRate >= 50} description="conversion rate" />
       </div>
 
       {/* Baris 2: Chart (Kiri) dan Wallet (Kanan) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Kiri: Revenue Chart mengambil ruang lebih luas (8 Kolom) agar grafik tidak terjepit */}
         <div className="lg:col-span-8 bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-xl p-6 shadow-sm">
           <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-6">Revenue Trajectory (Last 7 Days)</h3>
           <RevenueChart data={chartData} />
         </div>
 
-        {/* Kanan: Wallet Overview mengambil ruang sisa (4 Kolom) */}
         <div className="lg:col-span-4 space-y-6">
           <WalletOverview initialWallet={merchant.walletAddress} />
         </div>
       </div>
 
-      {/* Baris 3: Tabel Transaksi (Full Width / 12 Kolom) */}
+      {/* Baris 3: Tabel Transaksi */}
       <div className="bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-xl p-6 shadow-sm">
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-bold text-gray-900 dark:text-white text-sm">Recent Transactions</h3>

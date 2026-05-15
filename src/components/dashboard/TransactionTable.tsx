@@ -50,10 +50,8 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
       
-      {/* 1. KONTROL FILTER & SEARCH */}
       <div className="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white dark:bg-[#1E1E1E] p-4 rounded-xl border border-gray-200 dark:border-[#2A2A2A] shadow-sm">
         
-        {/* Search Bar (Tidak perlu <form> lagi) */}
         <div className="relative w-full sm:w-72">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-4 w-4 text-gray-400" />
@@ -67,7 +65,6 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
           />
         </div>
 
-        {/* Status Dropdown */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Filter className="h-4 w-4 text-gray-400" />
           <select
@@ -82,7 +79,6 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
         </div>
       </div>
 
-      {/* 2. TABEL UTAMA */}
       <div className="bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-xl overflow-hidden shadow-sm">
         {transactions.length === 0 ? (
           <div className="p-12 flex flex-col items-center justify-center text-gray-400">
@@ -96,7 +92,9 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
               <thead>
                 <tr className="bg-gray-50 dark:bg-[#151515] border-b border-gray-100 dark:border-[#2A2A2A]">
                   <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest rounded-tl-xl">Order ID</th>
-                  <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Amount</th>
+                  <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Gross</th>
+                  <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Fee (0.3%)</th>
+                  <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Net</th>
                   <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
                   <th className="p-4 text-[10px] font-black text-gray-400 uppercase tracking-widest rounded-tr-xl">Date</th>
                 </tr>
@@ -105,7 +103,20 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
                 {transactions.map((tx) => (
                   <tr key={tx.id} className="hover:bg-gray-50/50 dark:hover:bg-[#1A1A1A] transition-colors">
                     <td className="p-4 text-xs font-bold text-gray-700 dark:text-gray-300">{tx.orderId}</td>
-                    <td className="p-4 text-xs font-mono font-bold text-blue-600 dark:text-blue-400">{tx.amount} {tx.currency}</td>
+                    
+                    {/* Gross */}
+                    <td className="p-4 text-xs font-mono font-medium text-gray-500 dark:text-gray-400">
+                      {tx.amount} {tx.currency}
+                    </td>
+                    {/* Fee */}
+                    <td className="p-4 text-xs font-mono font-medium text-red-500 dark:text-red-400">
+                      {tx.feeAmount ? `-${tx.feeAmount} ${tx.currency}` : '-'}
+                    </td>
+                    {/* Net */}
+                    <td className="p-4 text-xs font-mono font-bold text-green-600 dark:text-green-500">
+                      {tx.netAmount ? `${tx.netAmount} ${tx.currency}` : '-'}
+                    </td>
+
                     <td className="p-4">
                       <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${
                         tx.status === 'PAID' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
@@ -124,7 +135,6 @@ export function TransactionTable({ transactions, totalPages }: TransactionTableP
         )}
       </div>
 
-      {/* 3. PAGINATION KONTROL */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-xl shadow-sm">
           <p className="text-xs text-gray-500 font-medium">

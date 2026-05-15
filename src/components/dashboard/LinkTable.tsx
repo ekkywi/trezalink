@@ -13,34 +13,28 @@ interface LinkTableProps {
 }
 
 export function LinkTable({ links, totalPages }: LinkTableProps) {
-  // 1. Hook untuk URL & Routing
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  // 2. Ambil nilai dari URL
   const currentPage = Number(searchParams.get("page")) || 1;
   const currentSearch = searchParams.get("search") || "";
   const currentStatus = searchParams.get("status") || "ALL";
 
-  // 3. State untuk Copy & Search
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState(currentSearch);
   const debouncedSearch = useDebounce(searchInput, 500);
 
-  // 4. Update URL otomatis berdasarkan Debounce
   useEffect(() => {
     if (debouncedSearch !== currentSearch) {
       updateURL("search", debouncedSearch);
     }
   }, [debouncedSearch]);
 
-  // Sync state lokal jika URL berubah dari luar
   useEffect(() => {
     setSearchInput(currentSearch);
   }, [currentSearch]);
 
-  // Fungsi Update URL utama
   const updateURL = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
     
@@ -57,7 +51,6 @@ export function LinkTable({ links, totalPages }: LinkTableProps) {
     replace(`${pathname}?${params.toString()}`);
   };
 
-  // Fungsi Copy Link
   const handleCopy = (id: string) => {
     const url = `${window.location.origin}/pay/${id}`;
     navigator.clipboard.writeText(url);
@@ -69,10 +62,7 @@ export function LinkTable({ links, totalPages }: LinkTableProps) {
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
       
-      {/* --- KONTROL PENCARIAN & FILTER --- */}
       <div className="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white dark:bg-[#1E1E1E] p-4 rounded-xl border border-gray-200 dark:border-[#2A2A2A] shadow-sm">
-        
-        {/* Search Bar dengan Debounce */}
         <div className="relative w-full sm:w-72">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-4 w-4 text-gray-400" />
@@ -86,7 +76,6 @@ export function LinkTable({ links, totalPages }: LinkTableProps) {
           />
         </div>
 
-        {/* Dropdown Status */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Filter className="h-4 w-4 text-gray-400" />
           <select
@@ -102,7 +91,6 @@ export function LinkTable({ links, totalPages }: LinkTableProps) {
         </div>
       </div>
 
-      {/* --- TABEL DATA --- */}
       <div className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-gray-200 dark:border-[#2A2A2A] overflow-hidden shadow-sm">
         {links.length === 0 ? (
            <div className="p-12 flex flex-col items-center justify-center text-center">
@@ -120,7 +108,9 @@ export function LinkTable({ links, totalPages }: LinkTableProps) {
               <thead className="bg-gray-50 dark:bg-[#151515] text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-[#2A2A2A]">
                 <tr>
                   <th className="p-4 font-black text-[10px] uppercase tracking-widest rounded-tl-xl">Reference ID</th>
-                  <th className="p-4 font-black text-[10px] uppercase tracking-widest">Amount</th>
+                  <th className="p-4 font-black text-[10px] uppercase tracking-widest">Gross</th>
+                  <th className="p-4 font-black text-[10px] uppercase tracking-widest">Fee (0.3%)</th>
+                  <th className="p-4 font-black text-[10px] uppercase tracking-widest">Net</th>
                   <th className="p-4 font-black text-[10px] uppercase tracking-widest">Status</th>
                   <th className="p-4 font-black text-[10px] uppercase tracking-widest">Created At</th>
                   <th className="p-4 font-black text-[10px] uppercase tracking-widest text-right rounded-tr-xl">Action</th>
@@ -132,8 +122,17 @@ export function LinkTable({ links, totalPages }: LinkTableProps) {
                     <td className="p-4 font-mono text-xs font-bold text-gray-900 dark:text-white">
                       {link.orderId}
                     </td>
-                    <td className="p-4 text-xs font-mono font-bold text-blue-600 dark:text-blue-400">
+                    {/* Gross */}
+                    <td className="p-4 text-xs font-mono font-medium text-gray-500 dark:text-gray-400">
                       {link.amount} SOL
+                    </td>
+                    {/* Fee */}
+                    <td className="p-4 text-xs font-mono font-medium text-red-500 dark:text-red-400">
+                      {link.feeAmount ? `-${link.feeAmount} SOL` : '-'}
+                    </td>
+                    {/* Net */}
+                    <td className="p-4 text-xs font-mono font-bold text-green-600 dark:text-green-500">
+                      {link.netAmount ? `${link.netAmount} SOL` : '-'}
                     </td>
                     <td className="p-4">
                       <span className={`px-2.5 py-1 text-[9px] font-black rounded-full uppercase tracking-wider ${
@@ -176,7 +175,6 @@ export function LinkTable({ links, totalPages }: LinkTableProps) {
         )}
       </div>
 
-      {/* --- KONTROL PAGINASI --- */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-xl shadow-sm">
           <p className="text-xs text-gray-500 font-medium">

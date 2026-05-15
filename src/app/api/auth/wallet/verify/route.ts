@@ -5,6 +5,7 @@ import { PublicKey } from "@solana/web3.js";
 import { sign } from "tweetnacl";
 import bs58 from "bs58";
 import prisma from "@/lib/neon";
+import crypto from "crypto";
 
 export async function POST(req: Request) {
   try {
@@ -31,6 +32,7 @@ export async function POST(req: Request) {
           businessName: `Merchant ${publicKey.slice(0, 4)}`,
           email: `${publicKey.slice(0, 8)}@wallet.auth`,
           password: "WALLET_AUTH_NO_PASSWORD",
+          apiKey: `tl_live_${crypto.randomBytes(32).toString('hex')}`,
         }
       });
     }

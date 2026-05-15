@@ -28,24 +28,25 @@ export default async function AnalyticsPage() {
       _count: { id: true },
     }),
 
-    // 2. Pelanggan Teratas (Leaderboard) - Tambah buyerWallet
+    // 2. Pelanggan Teratas (Leaderboard)
     prisma.transaction.groupBy({
       by: ['customerEmail', 'buyerWallet'], 
       where: { merchantId: merchant.id, status: 'PAID' },
-      _sum: { amount: true },
+      _sum: { amount: true }, // Biarkan ini menggunakan amount kotor untuk melihat daya beli pelanggan
       _count: { id: true },
       orderBy: { _sum: { amount: 'desc' } },
       take: 5,
     }),
 
-    // 3. Statistik Kartu Atas
+    // 3. Statistik Kartu Atas (UBAH KE NET AMOUNT & HANYA YANG PAID)
     prisma.transaction.aggregate({
       where: { merchantId: merchant.id },
       _count: { id: true },
-      _avg: { amount: true },
+      // Kita tambahkan sum untuk netAmount khusus transaksi sukses
+      _sum: { netAmount: true }, 
     }),
 
-    // 4. Raw Query: Historical Volume (Bulan & Status)
+    // 4. Raw Query: Historical Volume
     prisma.$queryRaw`
       SELECT 
         to_char("createdAt", 'Mon YYYY') as month, 
@@ -57,7 +58,7 @@ export default async function AnalyticsPage() {
       ORDER BY MIN("createdAt") ASC
     `,
 
-    // 5. Raw Query: Peak Buying Hours (Jam 00-23)
+    // 5. Raw Query: Peak Buying Hours
     prisma.$queryRaw`
       SELECT 
         EXTRACT(HOUR FROM "createdAt") as hour, 
@@ -119,11 +120,16 @@ export default async function AnalyticsPage() {
 
       {/* Row 1: Metrik Rata-rata */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* KARTU 1 DIUBAH MENJADI TOTAL NET REVENUE */}
         <div className="bg-white dark:bg-[#1E1E1E] p-6 rounded-2xl border border-gray-200 dark:border-[#2A2A2A]">
           <Users className="text-purple-500 mb-2" size={20} />
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Avg. Ticket Size</p>
-          <h3 className="text-xl font-bold dark:text-white font-mono">{(totalStats._avg.amount || 0).toFixed(3)} SOL</h3>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Net Revenue</p>
+          <h3 className="text-xl font-bold dark:text-white font-mono text-green-500">
+            {(totalStats._sum.netAmount || 0).toFixed(4)} SOL
+          </h3>
+          <p className="text-[9px] text-gray-500 mt-1 font-medium">After 0.3% platform fee</p>
         </div>
+        
         <div className="bg-white dark:bg-[#1E1E1E] p-6 rounded-2xl border border-gray-200 dark:border-[#2A2A2A]">
           <Target className="text-green-500 mb-2" size={20} />
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Orders</p>
@@ -169,7 +175,6 @@ export default async function AnalyticsPage() {
         </div>
         <div className="lg:col-span-5 bg-white dark:bg-[#1E1E1E] p-6 rounded-2xl border border-gray-200 dark:border-[#2A2A2A] shadow-sm">
           <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-6">Top Spending Customers</h3>
-          {/* 5. Mengirimkan data yang sudah diformat ke komponen */}
           <TopCustomersTable customers={formattedTopCustomers} />
         </div>
       </div>

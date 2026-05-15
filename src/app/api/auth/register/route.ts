@@ -42,6 +42,7 @@ export async function POST(req: Request) {
                 password: hashedPassword,
                 activationToken,
                 emailVerified: false,
+                apiKey: `tl_live_${crypto.randomBytes(32).toString('hex')}`,
             }
         });
 
