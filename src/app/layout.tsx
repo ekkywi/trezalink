@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SolanaProvider } from "@/components/SolanaProvider";
+import { Toaster } from "sonner";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -31,7 +32,7 @@ export default function RootLayout({
             {children}
           </SolanaProvider>
         </ThemeProvider>
-        
+        <Toaster richColors closeButton position="top-right" />
       </body>
     </html>
   );

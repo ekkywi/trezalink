@@ -48,7 +48,7 @@ export default async function AdminOverviewPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       
       {/* SECTION: ENTERPRISE HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-gray-200 dark:border-[#2A2A2A]">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl shadow-lg shadow-blue-500/20 ring-1 ring-blue-500/50">
             <ShieldCheck size={24} />

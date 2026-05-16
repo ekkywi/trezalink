@@ -119,3 +119,10 @@ export async function POST(req: Request) {
         );
     }
 }
+
+export async function OPTIONS() {
+    return new NextResponse(null, {
+        status: 204,
+        headers: corsHeaders,
+    });
+}

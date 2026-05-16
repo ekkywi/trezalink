@@ -56,17 +56,20 @@ export default async function PaymentLinksPage({
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-10">
+      <header className="w-full pb-4 mb-4 border-b border-gray-200 dark:border-[#2A2A2A] flex items-start justify-between">
         <div>
-          <h2 className="text-2xl font-bold dark:text-white text-gray-900 flex items-center gap-2">
-            <LinkIcon className="text-blue-500" /> Payment Links
+          <h2 id="payment-links-heading" className="text-2xl font-bold dark:text-white text-gray-900 flex items-center gap-2">
+            <LinkIcon className="text-blue-500" aria-hidden />
+            <span>Payment Links</span>
           </h2>
           <p className="text-sm text-gray-500 mt-1">Create and manage no-code payment links for your customers.</p>
         </div>
 
-        <CreateLinkButton merchantId={merchant.id} />
-      </div>
+        <div className="shrink-0">
+          <CreateLinkButton merchantId={merchant.id} />
+        </div>
+      </header>
 
       {/* 5. Kirim data dan total halaman ke komponen LinkTable yang sudah kita upgrade */}
       <LinkTable links={links} totalPages={totalPages} />

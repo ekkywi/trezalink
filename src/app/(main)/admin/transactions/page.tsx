@@ -2,18 +2,22 @@
 import prisma from "@/lib/neon";
 import { Globe, Search, Filter, ArrowUpRight, Activity } from "lucide-react";
 
-// Karena ini Server Component, kita baca searchParams langsung dari URL
 export default async function AdminTransactionsPage({
   searchParams,
 }: {
-  searchParams: { search?: string; status?: string; page?: string };
+  // 1. UBAH TIPENYA MENJADI PROMISE
+  searchParams: Promise<{ search?: string; status?: string; page?: string }>; 
 }) {
-  const page = Number(searchParams.page) || 1;
-  const limit = 20; // Tampilkan 20 transaksi per halaman
+  // 2. AWAIT SEARCHPARAMS DI SINI
+  const resolvedSearchParams = await searchParams;
+
+  // 3. GUNAKAN VARIABEL YANG SUDAH DI-AWAIT
+  const page = Number(resolvedSearchParams.page) || 1;
+  const limit = 20; 
   const skip = (page - 1) * limit;
 
-  const search = searchParams.search || "";
-  const status = searchParams.status || "ALL";
+  const search = resolvedSearchParams.search || "";
+  const status = resolvedSearchParams.status || "ALL";
 
   // Bangun query dinamis berdasarkan filter
   const whereClause: any = {};
@@ -32,7 +36,7 @@ export default async function AdminTransactionsPage({
       skip,
       take: limit,
       include: { 
-        merchant: { select: { businessName: true, email: true } } // PENTING: Tarik data merchant!
+        merchant: { select: { businessName: true, email: true } } 
       }
     }),
     prisma.transaction.count({ where: whereClause })

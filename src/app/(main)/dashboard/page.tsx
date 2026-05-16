@@ -82,7 +82,7 @@ export default async function DashboardPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       
       {/* Header */}
-      <div>
+      <div className="w-full pb-4 mb-4 border-b border-gray-200 dark:border-[#2A2A2A]">
         <h2 className="text-2xl font-bold dark:text-white text-gray-900 flex items-center gap-2">
           <LayoutDashboard className="text-blue-500" /> Dashboard Overview
         </h2>

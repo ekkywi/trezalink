@@ -38,7 +38,7 @@ export function SettingsView({ merchant }: { merchant: any }) {
 
       {/* TAB 1: PROFILE */}
       {activeTab === "profile" && (
-        <div className="bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="max-w-3xl bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
           <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Business Name</h3>
           <p className="text-xs text-gray-500 mb-4">This name will be displayed to your customers on the checkout page.</p>
           <div className="flex gap-2">
@@ -52,7 +52,7 @@ export function SettingsView({ merchant }: { merchant: any }) {
 
       {/* TAB 2: PAYOUTS */}
       {activeTab === "payouts" && (
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
+        <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4">
           <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-900/20 p-4 rounded-xl">
              <p className="text-[11px] text-yellow-700 dark:text-yellow-500 leading-relaxed font-medium">
                <strong>Security Notice:</strong> To ensure your funds are safe, we require you to cryptographically sign a message using your Phantom Wallet. We do not allow manual input of wallet addresses.
@@ -64,7 +64,7 @@ export function SettingsView({ merchant }: { merchant: any }) {
 
       {/* TAB 3: WEBHOOKS */}
       {activeTab === "webhooks" && (
-        <div className="bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="max-w-3xl bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-[#2A2A2A] rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center text-purple-600"><Globe size={20} /></div>
             <div><h3 className="text-sm font-bold text-gray-900 dark:text-white">Webhook Configuration</h3><p className="text-xs text-gray-500">Receive real-time notifications.</p></div>

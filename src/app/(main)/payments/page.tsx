@@ -58,15 +58,13 @@ export default async function PaymentsPage({
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold dark:text-white text-gray-900 flex items-center gap-2">
-            <Activity className="text-blue-500" /> Transaction History
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">View and manage your incoming Solana payments.</p>
-        </div>
-      </div>
+    <div className="space-y-8 animate-in fade-in duration-500 pb-10">
+      <div className="w-full pb-4 mb-4 border-b border-gray-200 dark:border-[#2A2A2A]">
+        <h2 className="text-2xl font-bold dark:text-white text-gray-900 flex items-center gap-2">
+        <Activity className="text-blue-500" /> Transaction History
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">View and manage your incoming Solana payments.</p>
+    </div>
       
       {/* Kirim data yang sudah difilter dan total halaman ke tabel */}
       <TransactionTable 

@@ -110,7 +110,7 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-10">
-      <div>
+      <div className="w-full pb-4 mb-4 border-b border-gray-200 dark:border-[#2A2A2A]">
         <h2 className="text-2xl font-bold dark:text-white text-gray-900 flex items-center gap-2">
           <BarChart3 className="text-blue-500" /> Advanced Analytics
         </h2>
