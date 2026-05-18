@@ -2,7 +2,7 @@
 import prisma from "@/lib/neon";
 import { notFound } from "next/navigation";
 import { CheckoutCard } from "@/components/checkout/CheckoutCard";
-import { ShieldCheck, Lock, ArrowRight, ExternalLink, Link2 } from "lucide-react"; // TAMBAHKAN ExternalLink & Link2
+import { ShieldCheck, Lock, ArrowRight, ExternalLink, Link2 } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -40,7 +40,6 @@ export default async function CheckoutPage({ params }: { params: Promise<{ id: s
     notFound();
   }
 
-  // --- UI ENTERPRISE UNTUK STATUS PAID ---
   if (transaction.status === "PAID") {
     return (
       <div className="min-h-screen relative flex items-center justify-center bg-[#FAFAFA] dark:bg-[#0A0A0A] p-4 overflow-hidden">
@@ -55,7 +54,6 @@ export default async function CheckoutPage({ params }: { params: Promise<{ id: s
             Thank you for your purchase from <strong>{transaction.merchant.businessName}</strong>. Your transaction has been confirmed.
           </p>
 
-          {/* --- KOTAK BLOCKCHAIN RECEIPT (BARU) --- */}
           {transaction.txSignature && (
             <div className="mb-8 p-4 bg-gray-50/80 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10 flex items-center justify-between text-left shadow-inner">
               <div className="flex items-center gap-3">

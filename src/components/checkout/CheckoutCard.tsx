@@ -3,12 +3,19 @@
 
 import { Wallet, ArrowRight, CheckCircle2, AlertTriangle, Loader2, Copy, ExternalLink, Link2 } from "lucide-react";
 import { useSolanaCheckout } from "@/hooks/web3/useSolanaCheckout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export function CheckoutCard({ transaction }: { transaction: any }) {
+  const router = useRouter();
   const { loading, success, error, connected, handlePayment, signature } = useSolanaCheckout(transaction) as any;
-  
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (success) {
+      router.refresh();
+    }
+  }, [success, router]);
 
   const copyOrderId = () => {
     navigator.clipboard.writeText(transaction.orderId);
@@ -18,43 +25,18 @@ export function CheckoutCard({ transaction }: { transaction: any }) {
 
   if (success) {
     return (
-      <div className="w-full bg-white/90 dark:bg-[#111111]/90 backdrop-blur-2xl rounded-[2rem] shadow-2xl shadow-gray-200/50 dark:shadow-black/50 border border-white/60 dark:border-white/10 p-8 text-center animate-in zoom-in-95 duration-500">
-        <div className="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/30 ring-8 ring-green-50 dark:ring-green-500/10">
-          <CheckCircle2 size={40} strokeWidth={2.5} />
+      <div className="w-full bg-white/90 dark:bg-[#111111]/90 backdrop-blur-2xl rounded-[2rem] shadow-2xl shadow-gray-200/50 dark:shadow-black/50 border border-white/60 dark:border-white/10 p-10 text-center animate-in zoom-in-95 duration-500 flex flex-col items-center justify-center min-h-[320px]">
+        <div className="w-16 h-16 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mb-6 relative">
+          <div className="absolute inset-0 bg-blue-500/20 rounded-full animate-ping opacity-25"></div>
+          <Loader2 size={28} className="animate-spin relative z-10" />
         </div>
-        <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Payment Successful!</h2>
-        <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">Your transaction has been confirmed on the Solana blockchain.</p>
         
-        {signature && (
-          <div className="mb-8 p-3 bg-gray-50/80 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10 flex items-center justify-between text-left shadow-inner">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-xl">
-                <Link2 size={16} />
-              </div>
-              <div>
-                <p className="text-[9px] font-extrabold uppercase tracking-widest text-gray-400 dark:text-gray-500">Receipt</p>
-                <p className="text-[11px] font-mono font-medium text-gray-900 dark:text-white mt-0.5">
-                  {signature.substring(0, 6)}...{signature.slice(-6)}
-                </p>
-              </div>
-            </div>
-            <a 
-              href={`https://solscan.io/tx/${signature}?cluster=devnet`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="px-3 py-1.5 bg-white dark:bg-[#222] hover:bg-gray-100 dark:hover:bg-[#333] border border-gray-200 dark:border-[#444] rounded-lg text-[10px] font-bold text-gray-700 dark:text-gray-300 transition-all flex items-center gap-1.5 shadow-sm"
-            >
-              Verify <ExternalLink size={10} />
-            </a>
-          </div>
-        )}
-
-        <button 
-          onClick={() => window.location.reload()}
-          className="w-full bg-gray-900 text-white dark:bg-white dark:text-gray-900 py-4 rounded-xl font-bold hover:opacity-90 transition-all shadow-md"
-        >
-          {transaction.successUrl ? "Continue to Merchant" : "View Final Receipt"}
-        </button>
+        <h2 className="text-xl font-extrabold text-gray-900 dark:text-white mb-2 tracking-tight animate-pulse">
+          Payment Detected
+        </h2>
+        <p className="text-gray-500 dark:text-gray-400 text-sm max-w-[260px] leading-relaxed font-medium">
+          Finalizing transaction blocks on Solana. Preparing your secure receipt...
+        </p>
       </div>
     );
   }
